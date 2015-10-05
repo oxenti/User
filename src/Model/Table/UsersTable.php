@@ -230,7 +230,7 @@ class UsersTable extends Table
      * @param User $user the User info.
      * @return bool
      */
-    public function sendEmail($user)
+    public function sendVerificationEmail($user)
     {
         $email = new Email('default');
         $code = $user->emailcheckcode;
