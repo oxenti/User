@@ -46,7 +46,7 @@ class UsersocialdataFixture extends TestFixture
         [
             'id' => 1,
             'user_id' => 1,
-            'linkedin_id' => 'TzvfczKGv1',
+            'linkedin_id' => 'asd',
             'linkedin_token' => 'Lorem ipsum dolor sit amet',
             'created' => '2015-10-05 18:27:28',
             'modified' => '2015-10-05 18:27:28'

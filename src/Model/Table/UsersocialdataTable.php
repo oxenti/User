@@ -37,11 +37,6 @@ class UsersocialdataTable extends Table
             'joinType' => 'INNER',
             'className' => 'User.Users'
         ]);
-        $this->belongsTo('Linkedins', [
-            'foreignKey' => 'linkedin_id',
-            'joinType' => 'INNER',
-            'className' => 'User.Linkedins'
-        ]);
     }
 
     /**
@@ -72,7 +67,6 @@ class UsersocialdataTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add($rules->existsIn(['linkedin_id'], 'Linkedins'));
         return $rules;
     }
 }

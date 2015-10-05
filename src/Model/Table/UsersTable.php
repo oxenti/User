@@ -58,6 +58,10 @@ class UsersTable extends Table
             'foreignKey' => 'user_id',
             'className' => 'User.Usermessages'
         ]);
+        $this->hasOne('Usersocialdata', [
+            'foreignKey' => 'user_id',
+            'className' => 'User.Usersocialdata'
+        ]);
 
         foreach (Configure::read('relations') as $type => $relations) {
             foreach ($relations as $relationName => $relationProprities) {
@@ -68,10 +72,6 @@ class UsersTable extends Table
         // $this->hasMany('Addresses', [
         //     'foreignKey' => 'user_id',
         //     'className' => 'User.Addresses'
-        // ]);
-        // $this->hasMany('Usersocialdata', [
-        //     'foreignKey' => 'user_id',
-        //     'className' => 'User.Usersocialdata'
         // ]);
         // $this->hasMany('Institutions', [
         //     'foreignKey' => 'user_id',
@@ -235,12 +235,12 @@ class UsersTable extends Table
         $email = new Email('default');
         $code = $user->emailcheckcode;
 
-        $email->from(['me@example.com' => 'Acadios'])
+        $email->from(['me@example.com' => 'Your System'])
             ->emailFormat('html')
             ->template('register', 'default')
             ->viewVars(['code' => $code])
             ->to($user->email)
-            ->subject('Acadios registration');
+            ->subject('Your System registration');
 
         if ($email->send()) {
             return true;

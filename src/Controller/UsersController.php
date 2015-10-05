@@ -278,7 +278,7 @@ class UsersController extends AppController
             if (!empty($user)) {
                 $email = new Email('default');
                 $code = $user->passwordchangecode;
-                $email->from(['me@example.com' => 'Acadios'])
+                $email->from(['me@example.com' => 'Your System'])
                     ->emailFormat('html')
                     ->template('lost_password', 'default')
                     ->viewVars(['code' => $code, 'url' => $options['url']])
@@ -332,39 +332,34 @@ class UsersController extends AppController
         ]);
     }
 
-
-    // public function linkedinget()
-    // {
-    //     $token = 'AQX1hLJ7dv94xFQH278gSoutlsGOce3cz7BF3PTXsoqQ8wP8HrYyO-5Oc-x4xwObe9woICn67sITEscf_YQ4Zt-DyxxUmVWNeuJm2UWVwR-AiSp69vhybc6veCSxLCgwWDHoTGBPhZtHxqEal_VSBFCKef6FyW4fOgNiZHeZo5hYPl5qY_g';
-    //     $teste = $this->Linkedin->linkedinget('/v1/people/~:(id,firstName,lastName,headline,email-address)', $token);
-    //     debug($teste);
-    //     die();
-    // }
-
     public function linkedin_handler()
     {
+        $this->request->allowMethod(['post']);
         if ($this->request->data) {
             $token = $this->request->data['usersocialdata']['linkedin_token'];
-            // $token = 'AQX1hLJ7dv94xFQH278gSoutlsGOce3cz7BF3PTXsoqQ8wP8HrYyO-5Oc-x4xwObe9woICn67sITEscf_YQ4Zt-DyxxUmVWNeuJm2UWVwR-AiSp69vhybc6veCSxLCgwWDHoTGBPhZtHxqEal_VSBFCKef6FyW4fOgNiZHeZo5hYPl5qY_g';
             $linkedinData = $this->Linkedin->linkedinget('/v1/people/~:(id)', $token);
             $usersocialdata = $this->Users->Usersocialdata->find()->where(['linkedin_id' => $linkedinData['id']])->contain('Users')->first();
             if ($usersocialdata) {//login action
                 $token = $this->_makeToken($usersocialdata['user']['id']);
+                $success = true;
             } else {
-                $user = $this->Users->newEntity($this->request->data['user']);
+                $user = $this->Users->newEntity($this->request->data);
                 if ($this->Users->save($user)) {
                     $token = $this->_makeToken($user->id);
+                    $success = true;
                 } else {
                     throw new NotFoundException('The user could not be saved. Please, try again.');
                 }
             }
             $this->set([
-                'success' => true,
+            'success' => $success,
                 'data' => [
                     'token' => $token
                 ],
                 '_serialize' => ['success', 'data']
             ]);
+        } else {
+            throw new NotFoundException('The user could not be saved. Please, try again.');
         }
     }
 }

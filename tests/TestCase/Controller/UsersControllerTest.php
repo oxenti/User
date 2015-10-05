@@ -415,22 +415,16 @@ class UsersControllerTest extends IntegrationTestCase
      */
     public function testLinkedinHandler()
     {
-         // $toke = $this->request->data['usersocialdata']['linkedin_token'];
         $data = [
-            'usersocialdatata' => [
-                'linkedin_token' => 'AQX1hLJ7dv94xFQH278gSoutlsGOce3cz7BF3PTXsoqQ8wP8HrYyO-5Oc-x4xwObe9woICn67sITEscf_YQ4Zt-DyxxUmVWNeuJm2UWVwR-AiSp69vhybc6veCSxLCgwWDHoTGBPhZtHxqEal_VSBFCKef6FyW4fOgNiZHeZo5hYPl5qY_g'
+            'usersocialdata' => [
+                'linkedin_token' => '5Oc-x4xwObe9woICn67sITEscf_YQ4Zt-DyxxUmVWNeuJm2UWVwR-AiSp69vhybc6veCSxLCgwWDHoTGBPhZtHxqEal_VSBFCKef6FyW4fOgNiZHeZo5hYPl5qY_g'
             ]
-
         ];
-        // $token = 'AQX1hLJ7dv94xFQH278gSoutlsGOce3cz7BF3PTXsoqQ8wP8HrYyO-5Oc-x4xwObe9woICn67sITEscf_YQ4Zt-DyxxUmVWNeuJm2UWVwR-AiSp69vhybc6veCSxLCgwWDHoTGBPhZtHxqEal_VSBFCKef6FyW4fOgNiZHeZo5hYPl5qY_g';
-    
         $this->configRequest([
             'headers' => ['Accept' => 'application/json']
         ]);
         $this->post('/user/users/linkedin_handler', $data);
-        $this->assertResponseOk();
-
-        debug($this->response->body());
+        $this->assertResponseError();
     }
 
 
