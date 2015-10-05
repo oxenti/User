@@ -38,7 +38,7 @@ class UsersController extends AppController
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Auth->allow(['token', 'add', 'verify', 'reset_password']);
+        $this->Auth->allow(['token', 'add', 'verify', 'reset_password', 'linkedin_handler']);
     }
 
     public function logout()
@@ -56,16 +56,22 @@ class UsersController extends AppController
         $this->set([
             'success' => true,
             'data' => [
-                'token' => $token = \JWT::encode(
-                    [
-                        'id' => $user['id'],
-                        'exp' => time() + 604800
-                    ],
-                    Security::salt()
-                )
+                'token' => $this->_makeToken($user['id'])
             ],
             '_serialize' => ['success', 'data']
         ]);
+    }
+
+    protected function _makeToken($userId)
+    {
+        $token = \JWT::encode(
+            [
+                'id' => $userId,
+                'exp' => time() + 604800
+            ],
+            Security::salt()
+        );
+        return $token;
     }
 
     /**
@@ -114,7 +120,8 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->data);
             if ($this->Users->save($user)) {
-                // $this->Users->sendEmail($user);
+                $this->Users->sendVerificationEmail($user);
+                debug($user);
                 $message = 'The user has been saved.';
                 $this->set([
                     'success' => true,
@@ -301,14 +308,14 @@ class UsersController extends AppController
      *
      * @return void
      */
-    public function resend_verification()
+    public function send_verification()
     {
         $user = $this->Users->get($this->Auth->user('id'));
         if (empty($user->emailcheckcode)) {
             throw new UnauthorizedException('Email already confirmed');
         } else {
             $user->emailcheckcode = md5(time() * rand());
-            if ($this->Users->sendEmail($user)) {
+            if ($this->Users->sendVerificationEmail($user)) {//mudar nome
                 $this->Users->save($user);
                 $message = __('The email was resent. Please check your inbox.');
                 $success = true;
@@ -323,5 +330,41 @@ class UsersController extends AppController
             'message' => $message,
             '_serialize' => ['success', 'message']
         ]);
+    }
+
+
+    // public function linkedinget()
+    // {
+    //     $token = 'AQX1hLJ7dv94xFQH278gSoutlsGOce3cz7BF3PTXsoqQ8wP8HrYyO-5Oc-x4xwObe9woICn67sITEscf_YQ4Zt-DyxxUmVWNeuJm2UWVwR-AiSp69vhybc6veCSxLCgwWDHoTGBPhZtHxqEal_VSBFCKef6FyW4fOgNiZHeZo5hYPl5qY_g';
+    //     $teste = $this->Linkedin->linkedinget('/v1/people/~:(id,firstName,lastName,headline,email-address)', $token);
+    //     debug($teste);
+    //     die();
+    // }
+
+    public function linkedin_handler()
+    {
+        if ($this->request->data) {
+            $token = $this->request->data['usersocialdata']['linkedin_token'];
+            // $token = 'AQX1hLJ7dv94xFQH278gSoutlsGOce3cz7BF3PTXsoqQ8wP8HrYyO-5Oc-x4xwObe9woICn67sITEscf_YQ4Zt-DyxxUmVWNeuJm2UWVwR-AiSp69vhybc6veCSxLCgwWDHoTGBPhZtHxqEal_VSBFCKef6FyW4fOgNiZHeZo5hYPl5qY_g';
+            $linkedinData = $this->Linkedin->linkedinget('/v1/people/~:(id)', $token);
+            $usersocialdata = $this->Users->Usersocialdata->find()->where(['linkedin_id' => $linkedinData['id']])->contain('Users')->first();
+            if ($usersocialdata) {//login action
+                $token = $this->_makeToken($usersocialdata['user']['id']);
+            } else {
+                $user = $this->Users->newEntity($this->request->data['user']);
+                if ($this->Users->save($user)) {
+                    $token = $this->_makeToken($user->id);
+                } else {
+                    throw new NotFoundException('The user could not be saved. Please, try again.');
+                }
+            }
+            $this->set([
+                'success' => true,
+                'data' => [
+                    'token' => $token
+                ],
+                '_serialize' => ['success', 'data']
+            ]);
+        }
     }
 }
