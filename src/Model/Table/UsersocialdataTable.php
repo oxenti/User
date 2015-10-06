@@ -6,6 +6,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use User\Model\Entity\Usersocialdata;
+use User\Model\Table\AppTable;
 
 /**
  * Usersocialdata Model
@@ -13,7 +14,7 @@ use User\Model\Entity\Usersocialdata;
  * @property \Cake\ORM\Association\BelongsTo $Users
  * @property \Cake\ORM\Association\BelongsTo $Linkedins
  */
-class UsersocialdataTable extends Table
+class UsersocialdataTable extends AppTable
 {
 
     /**

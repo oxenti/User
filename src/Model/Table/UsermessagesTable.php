@@ -6,6 +6,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use User\Model\Table\AppTable;
 
 /**
  * Usermessages Model
@@ -14,7 +15,7 @@ use Cake\Validation\Validator;
  * @property \Cake\ORM\Association\BelongsTo $Users
  * @property \Cake\ORM\Association\BelongsTo $Usermessages
  */
-class UsermessagesTable extends Table
+class UsermessagesTable extends AppTable
 {
     /**
      * Initialize method

@@ -9,6 +9,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use User\Model\Entity\User;
+use User\Model\Table\AppTable;
 
 /**
  * Users Model
@@ -24,7 +25,7 @@ use User\Model\Entity\User;
  * @property \Cake\ORM\Association\HasMany $Usermessages
  * @property \Cake\ORM\Association\HasMany $Usersocialdata
  */
-class UsersTable extends Table
+class UsersTable extends AppTable
 {
 
     /**

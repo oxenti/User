@@ -38,7 +38,9 @@ class UsersController extends AppController
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Auth->allow(['token', 'add', 'verify', 'reset_password', 'linkedin_handler']);
+        if( isset($this->Auth)){
+            $this->Auth->allow(['token', 'add', 'verify', 'reset_password', 'linkedin_handler']);            
+        }
     }
 
     public function logout()

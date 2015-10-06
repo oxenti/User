@@ -7,16 +7,17 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use SoftDelete\Model\Table\SoftDeleteTrait;
 use User\Model\Entity\Gender;
+use User\Model\Table\AppTable;
 
 /**
  * Genders Model
  *
  * @property \Cake\ORM\Association\HasMany $Users
  */
-class GendersTable extends Table
+class GendersTable extends AppTable
 {
 
-    use SoftDeleteTrait;
+    // use SoftDeleteTrait;
 
     /**
      * Initialize method
