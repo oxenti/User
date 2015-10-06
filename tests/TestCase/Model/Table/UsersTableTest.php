@@ -248,7 +248,7 @@ class UsersTableTest extends TestCase
         $oldPassword = $user->password;
 
         $teste = $this->Users->resetPassword($user, $data);
-        $this->assertTrue($teste, 'metodo retornou deveria retornar true');
+        $this->assertTrue($teste, 'metodo deveria retornar true');
 
         $user = $this->Users->get(1);
         $newPassword = $user->password;
@@ -259,7 +259,7 @@ class UsersTableTest extends TestCase
             'confirm_password' => 'arroz'
         ];
         $teste = $this->Users->resetPassword($user, $data);
-        $this->assertFalse($teste, 'metodo retornou deveria retornar false');
+        $this->assertFalse($teste, 'metodo deveria retornar false');
     }
 
     public function testCheckPasswordToken()
@@ -273,5 +273,30 @@ class UsersTableTest extends TestCase
 
         $user = $this->Users->checkPasswordToken($passwordChangeCode);
         $this->assertFalse($user, 'Codigo invalido deve retornar false');
+    }
+
+    public function testHash()
+    {
+        $password = 'Lorem ipsum dolor sit amet';
+
+        $hashed = $this->Users->hash($password);
+        $this->assertNotSame($password, $hashed, 'texto e hash devem ser diferentes');
+    }
+
+    public function testpasswordResetCode()
+    {
+        $data = [
+            'email' => 'root@root.com'
+        ];
+        $user = $this->Users->passwordResetCode($data);
+        $this->assertInstanceOf('User\Model\Entity\User', $user, 'Caso valido não gerou obejeto esperado');
+        $this->assertNotEmpty($user->passwordchangecode, 'message');
+        
+        // caso invalido
+        $data = [
+            'email' => 'emailque@naoexiste.com'
+        ];
+        $user = $this->Users->passwordResetCode($data);
+        $this->assertFalse($user, 'should return false');
     }
 }

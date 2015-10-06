@@ -296,7 +296,7 @@ class UsersControllerTest extends IntegrationTestCase
 
         $user = $users->get(1);
         $oldCode = $user->emailcheckcode;
-        $this->get('/user/users/resend_verification');
+        $this->get('/user/users/send_verification');
         $this->assertResponseSuccess();
         $user = $users->get(1);
         $newCode = $user->emailcheckcode;
