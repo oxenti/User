@@ -51,4 +51,26 @@ class User extends Entity
         '*' => true,
         'id' => false,
     ];
+
+    protected $_virtual = ['full_name'];
+
+    protected $_hidden = ['password', 'login', 'emailcheckcode', 'passwordchangecode', 'expire_account', 'created', 'gender_id', 'is_active', 'modified'];
+
+    /**
+     * Set Hashed password, before save
+     */
+    protected function _setPassword($value)
+    {
+        $hasher = new DefaultPasswordHasher();
+        return $hasher->hash($value);
+    }
+
+    /**
+     * virtual field full name
+     */
+    protected function _getFullName()
+    {
+        return $this->_properties['first_name'] . ' ' .
+            $this->_properties['last_name'];
+    }
 }

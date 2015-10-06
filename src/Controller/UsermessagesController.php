@@ -18,7 +18,6 @@ class UsermessagesController extends AppController
 
     public function isAuthorized($user)
     {
-        parent::isAuthorized($user);
         if (isset($user['usertype_id'])) {
             if (isset($this->request->params['user_id'])) {
                 if ($this->request->params['user_id'] == $user['id']) {
@@ -30,9 +29,7 @@ class UsermessagesController extends AppController
             }
             return true;
         }
-        // Default deny
-        throw new UnauthorizedException('UnauthorizedException ');
-        return false;
+        parent::isAuthorized($user);
     }
 
     public function beforeFilter(Event $event)
