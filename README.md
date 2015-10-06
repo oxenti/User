@@ -30,3 +30,24 @@ or using cake's console:
 ```sh
 ./bin/cake plugin load User
 ```
+
+## Configuration
+
+In your app's 'config/app.php' add this to your Datasources array:
+
+```php
+	'oxenti_user' => [
+        'className' => 'Cake\Database\Connection',
+        'driver' => 'Cake\Database\Driver\Mysql',
+        'persistent' => false,
+        'host' => 'ỳour_db_host',
+        'username' => 'username',
+        'password' => 'password',
+        'database' => 'databse_name',
+        'encoding' => 'utf8',
+        'timezone' => 'UTC',
+        'cacheMetadata' => true,
+        'log' => false,
+        'quoteIdentifiers' => false,
+    ],
+```
