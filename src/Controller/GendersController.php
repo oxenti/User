@@ -30,7 +30,11 @@ class GendersController extends AppController
      */
     public function index()
     {
-        $this->paginate = ['fields' => ['id', 'name']];
+        $finder = !isset($this->request->query['finder'])?'All': $this->request->query['finder'];
+        $this->paginate = [
+           'finder' => $finder,
+           'order' => ['Genders.name'],
+        ];
         $this->set('genders', $this->paginate($this->Genders));
         $this->set('_serialize', ['genders']);
     }

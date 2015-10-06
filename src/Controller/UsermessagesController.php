@@ -53,11 +53,14 @@ class UsermessagesController extends AppController
             $userId = $user['id'];
         }
 
-        $query = $this->Usermessages->find()->contain(['Sender', 'Receiver'])
+        $finder = !isset($this->request->query['finder'])?'All': $this->request->query['finder'];
+
+        $query = $this->Usermessages->find($finder)->contain(['Sender', 'Receiver'])
             ->select(['id', 'title', 'message', 'original_message_id', 'chatcode', 'unread', 'created',
                 'Sender.id', 'Sender.first_name', 'Sender.last_name', 'Receiver.id', 'Receiver.first_name', 'Receiver.last_name'])
             ->orWhere(['Sender.id' => $userId])
             ->orwhere([ 'Receiver.id' => $userId]);
+            
         $this->set('usermessages', $this->paginate($query));
         $this->set('_serialize', ['usermessages']);
     }

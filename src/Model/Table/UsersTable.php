@@ -276,7 +276,7 @@ class UsersTable extends Table
     /**
      * Resets the password
      *
-     * @param user $$user user entity
+     * @param user $user user entity
      * @param array $passwordData Post data from controller
      * @return boolean True on success
      */
@@ -294,7 +294,7 @@ class UsersTable extends Table
 
 
     /**
-     * Checks if an email is in the system, validated and if the user is active so that the user is allowed to reste his password
+     * Checks if an email is in the system, validated and if the user is active so that the user is allowed to reset his password
      *
      * @param array $postData post data from controller
      * @return mixed False or user data as array on success
@@ -308,8 +308,6 @@ class UsersTable extends Table
             $user->passwordchangecode = md5(time() * rand());
             $user = $this->save($user);
             return $user;
-        } else {
-            $this->invalidate('email', __d('users', 'This Email Address does not exist in the system.'));
         }
         return false;
     }

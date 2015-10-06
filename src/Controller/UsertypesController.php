@@ -30,7 +30,11 @@ class UsertypesController extends AppController
      */
     public function index()
     {
-        $this->paginate = ['fields' => ['id', 'name']];
+        $finder = !isset($this->request->query['finder'])?'All': $this->request->query['finder'];
+        $this->paginate = [
+           'finder' => $finder,
+           'order' => ['Usertypes.name'],
+        ];
         $this->set('usertypes', $this->paginate($this->Usertypes));
         $this->set('_serialize', ['usertypes']);
     }

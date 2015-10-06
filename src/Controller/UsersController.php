@@ -81,12 +81,15 @@ class UsersController extends AppController
      */
     public function index()
     {
+        $finder = !isset($this->request->query['finder'])?'All': $this->request->query['finder'];
         $this->paginate = [
-            'contain' => ['Usertypes', 'Genders']
+            'finder' => $finder,
+            'contain' => ['Usertypes', 'Genders'],
+            'order' => ['Users.first_name'],
         ];
+        
         $users = $this->paginate($this->Users);
         $this->set(compact('users'));
-
         $this->set('_serialize', ['users']);
     }
 
