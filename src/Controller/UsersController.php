@@ -104,6 +104,9 @@ class UsersController extends AppController
             ->where(['Users.id' => $userId])
             ->contain(['Usertypes', 'Genders'])
             ->first();
+        if (!$user) {
+            throw new NotFoundException('The user could not be found. Please, try again.');
+        }
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
     }
