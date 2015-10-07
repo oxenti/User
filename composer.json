@@ -13,17 +13,12 @@
     },
     "autoload": {
         "psr-4": {
-            "User\\": "./plugins/User/src"
-        }
-    },
-    "extra": {
-        "installer-paths": {
-            "./plugins/User": ["User"],
+            "User\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "User\\Test\\": "./plugins/User/tests",
+            "User\\Test\\": "tests",
             "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
         }
     }
