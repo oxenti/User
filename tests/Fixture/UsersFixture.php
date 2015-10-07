@@ -10,6 +10,8 @@ use Cake\TestSuite\Fixture\TestFixture;
 class UsersFixture extends TestFixture
 {
 
+    public $connection = 'test';
+    
     /**
      * Fields
      *
@@ -171,6 +173,40 @@ class UsersFixture extends TestFixture
             'login' => '',
             'password' => '$2y$10$W8cHelHWOsN/uOoJlexrv.gMQiJ8LBq4hE8CAPI6.qYJpQQfn6i9u',
             'email' => 'institution2@institution.com',
+            'emailcheckcode' => '11111111111111111111111111111111111',
+            'passwordchangecode' => 'Lorem ipsum dolor sit amet',
+            'is_active' => 1,
+        ],
+        [
+            'id' => 8,
+            'usertype_id' => 4,
+            'gender_id' => 1,
+            'first_name' => 'Tutor',
+            'last_name' => 'Primeiro',
+            'birth' => '2015-09-14',
+            'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
+            'phone1' => 'Lorem ipsum dolor sit amet',
+            'phone2' => 'Lorem ipsum dolor sit amet',
+            'login' => '',
+            'password' => '$2y$10$W8cHelHWOsN/uOoJlexrv.gMQiJ8LBq4hE8CAPI6.qYJpQQfn6i9u',
+            'email' => 'tutor@tutor.com',
+            'emailcheckcode' => '11111111111111111111111111111111111',
+            'passwordchangecode' => 'Lorem ipsum dolor sit amet',
+            'is_active' => 1,
+        ],
+        [
+            'id' => 9,
+            'usertype_id' => 4,
+            'gender_id' => 1,
+            'first_name' => 'Tutor',
+            'last_name' => 'Segundo',
+            'birth' => '2015-09-14',
+            'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
+            'phone1' => 'Lorem ipsum dolor sit amet',
+            'phone2' => 'Lorem ipsum dolor sit amet',
+            'login' => '',
+            'password' => '$2y$10$W8cHelHWOsN/uOoJlexrv.gMQiJ8LBq4hE8CAPI6.qYJpQQfn6i9u',
+            'email' => 'tutor2@tutor.com',
             'emailcheckcode' => '11111111111111111111111111111111111',
             'passwordchangecode' => 'Lorem ipsum dolor sit amet',
             'is_active' => 1,

@@ -1,6 +1,7 @@
 <?php
 namespace User\Model\Entity;
 
+use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
 
 /**

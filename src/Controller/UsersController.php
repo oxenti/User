@@ -127,7 +127,6 @@ class UsersController extends AppController
             $user = $this->Users->patchEntity($user, $this->request->data);
             if ($this->Users->save($user)) {
                 $this->Users->sendVerificationEmail($user);
-                debug($user);
                 $message = 'The user has been saved.';
                 $this->set([
                     'success' => true,

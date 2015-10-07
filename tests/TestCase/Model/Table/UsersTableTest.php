@@ -61,7 +61,7 @@ class UsersTableTest extends TestCase
                 'gender_id' => 1,
                 'first_name' => 'Lorem ipsum dolor sit amet',
                 'last_name' => 'Lorem ipsum dolor sit amet',
-                'password' => '$2y$10$W8cHelHWOsN/uOoJlexrv.gMQiJ8LBq4hE8CAPI6.qYJpQQfn6i9u',
+                'password' => 'qwe123',
                 'email' => 'emaildetestedoidao@root.com',
             ],
             [
@@ -225,7 +225,7 @@ class UsersTableTest extends TestCase
         $case1 = $this->Users->newEntity($cases[0]);
         $result = $this->Users->save($case1);
         $this->assertInstanceOf('User\Model\Entity\User', $result, 'Caso valido não gerou obejeto esperado');
-
+        debug($result);
         $case2 = $this->Users->newEntity($cases[1]);
         $result = $this->Users->save($case2);
         $this->assertFalse($result, 'caso incvalido n retornou false');
