@@ -16,6 +16,11 @@
             "User\\": "./plugins/User/src"
         }
     },
+    "extra": {
+        "installer-paths": {
+            "./plugins/User": ["User"],
+        }
+    },
     "autoload-dev": {
         "psr-4": {
             "User\\Test\\": "./plugins/User/tests",
