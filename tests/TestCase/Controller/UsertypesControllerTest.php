@@ -35,9 +35,11 @@ class UsertypesControllerTest extends IntegrationTestCase
 
         $respondeData = json_decode($this->_response->body());
         $count = count($respondeData->usertypes);
-
+        
         $users = TableRegistry::get('Usertypes');
-        $query = $users->find('all')->select(['id', 'name']);
+        $query = $users->find('all')
+            ->select(['id', 'name'])
+            ->order(['Usertypes.name']);
         $usertypeJson = json_encode(['usertypes' => $query], JSON_PRETTY_PRINT);
         
         $this->assertEquals($count, $query->count());

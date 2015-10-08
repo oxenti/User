@@ -14,16 +14,9 @@ use User\Model\Table\AppTable;
 /**
  * Users Model
  *
- * @property \Cake\ORM\Association\BelongsTo $Usertypes
- * @property \Cake\ORM\Association\BelongsTo $Genders
- * @property \Cake\ORM\Association\HasMany $Addresses
- * @property \Cake\ORM\Association\HasMany $Institutions
- * @property \Cake\ORM\Association\HasMany $Resources
- * @property \Cake\ORM\Association\HasMany $Students
- * @property \Cake\ORM\Association\HasMany $Teachers
- * @property \Cake\ORM\Association\HasMany $Tutors
- * @property \Cake\ORM\Association\HasMany $Usermessages
- * @property \Cake\ORM\Association\HasMany $Usersocialdata
+ * @property \Cake\ORM\Association\BelongsTo    $Usertypes
+ * @property \Cake\ORM\Association\HasOne       $Personalinformations
+ * @property \Cake\ORM\Association\HasOne       $Usersocialdata
  */
 class UsersTable extends AppTable
 {
@@ -51,14 +44,12 @@ class UsersTable extends AppTable
             'joinType' => 'INNER',
             'className' => 'User.Usertypes'
         ]);
-        $this->belongsTo('Genders', [
-            'foreignKey' => 'gender_id',
-            'className' => 'User.Genders'
-        ]);
-        $this->hasMany('Usermessages', [
+
+        $this->hasOne('Personalinformations', [
             'foreignKey' => 'user_id',
-            'className' => 'User.Usermessages'
+            'className' => 'User.Personalinformations'
         ]);
+
         $this->hasOne('Usersocialdata', [
             'foreignKey' => 'user_id',
             'className' => 'User.Usersocialdata'
@@ -69,31 +60,6 @@ class UsersTable extends AppTable
                 $this->$type($relationName, $relationProprities);
             }
         }
-
-        // $this->hasMany('Addresses', [
-        //     'foreignKey' => 'user_id',
-        //     'className' => 'User.Addresses'
-        // ]);
-        // $this->hasMany('Institutions', [
-        //     'foreignKey' => 'user_id',
-        //     'className' => 'User.Institutions'
-        // ]);
-        // $this->hasMany('Resources', [
-        //     'foreignKey' => 'user_id',
-        //     'className' => 'User.Resources'
-        // ]);
-        // $this->hasMany('Students', [
-        //     'foreignKey' => 'user_id',
-        //     'className' => 'User.Students'
-        // ]);
-        // $this->hasMany('Teachers', [
-        //     'foreignKey' => 'user_id',
-        //     'className' => 'User.Teachers'
-        // ]);
-        // $this->hasMany('Tutors', [
-        //     'foreignKey' => 'user_id',
-        //     'className' => 'User.Tutors'
-        // ]);
     }
 
     /**
@@ -109,51 +75,7 @@ class UsersTable extends AppTable
             ->allowEmpty('id', 'create');
 
         $validator
-           ->add('first_name', 'maxLength', [
-                'rule' => ['maxLength', 45]
-            ])
-            ->requirePresence('first_name', 'create')
-            ->notEmpty('first_name');
-
-        $validator
-            ->add('last_name', 'maxLength', [
-                'rule' => ['maxLength', 45]
-            ])
-            ->requirePresence('last_name', 'create')
-            ->notEmpty('last_name');
-
-        $validator
-            ->add('birth', 'valid', ['rule' => 'date'])
-            ->allowEmpty('birth');
-
-        $validator
             ->allowEmpty('avatar_path');
-
-        $validator
-            ->add('phone1', [
-                'valid' => [
-                    'rule' => 'numeric',
-                    'last' => true
-                ],
-                'maxLength' => [
-                    'rule' => ['maxLength', 14]
-                ]
-            ])
-            ->allowEmpty('phone1');
-            
-
-        $validator
-            ->add('phone2', [
-                'valid' => [
-                    'rule' => 'numeric',
-                    'last' => true
-                ],
-                'maxLength' => [
-                    'rule' => ['maxLength', 14]
-                ]
-            ])
-            ->allowEmpty('phone2');
-            
 
         $validator
             ->requirePresence('password', 'create')
@@ -189,11 +111,6 @@ class UsersTable extends AppTable
             ->add('usertype_id', 'valid', ['rule' => 'numeric'])
             ->requirePresence('usertype_id', 'create')
             ->notEmpty('usertype_id');
-
-        $validator
-            ->add('gender_id', 'valid', ['rule' => 'numeric'])
-            ->requirePresence('gender_id', 'create')
-            ->notEmpty('gender_id');
             
         return $validator;
     }
@@ -220,13 +137,13 @@ class UsersTable extends AppTable
     {
         // $rules->add($rules->isUnique(['login']));
         $rules->add($rules->isUnique(['email']));
+        // $rules->add($rules->isUnique(['emailcheckcode']));
         $rules->add($rules->existsIn(['usertype_id'], 'Usertypes'));
-        $rules->add($rules->existsIn(['gender_id'], 'Genders'));
         return $rules;
     }
 
     /**
-     * sendEmail method
+     * sendVerificationEmail method
      *
      * @param User $user the User info.
      * @return bool
@@ -265,6 +182,7 @@ class UsersTable extends AppTable
         }
         return $user;
     }
+
     /**
      *
      */
@@ -275,24 +193,56 @@ class UsersTable extends AppTable
     }
 
     /**
+     * formatRequestData method
+     * Formats user request data extracting Personal information
+     * and adding it to its own model
+     * @param array $data  Request Data
+     * @return array  Formated data
+     */
+    public function formatRequestData(Array $data)
+    {
+        $fields = ['gender_id', 'first_name', 'last_name', 'birth', 'phone1', 'phone2'];
+
+        foreach ($fields as $field) {
+            if (isset($data[$field])) {
+                $data['Personalinformation'][$field] = $data[$field];
+                unset($data[$field]);
+            }
+
+            if (isset($data['User'][$field])) {
+                $data['Personalinformation'][$field] = $data['User'][$field];
+                unset($data['User'][$field]);
+            }
+        }
+        // $allowedR
+
+        return $data;
+    }
+    /**
      * Resets the password
      *
      * @param user $user user entity
      * @param array $passwordData Post data from controller
      * @return boolean True on success
      */
-    public function resetPassword($user, $passwordData)
+    public function resetPassword($code, $email, $newPassword)
     {
-        if ($passwordData['new_password'] === $passwordData['confirm_password']) {
-            $user->password = $this->hash($passwordData['new_password']);
-            $user->passwordchangecode = false;
-            if ($this->save($user)) {
-                return true;
-            }
+        $user = $this->find()
+            ->where(['passwordchangecode' => $code, 'email' => $email])
+            ->first();
+    
+        if (empty($user)) {
+            return false;
         }
-        return false;
-    }
 
+        $user->password = $this->hash($newPassword);
+        $user->passwordchangecode = null;
+        if (! $this->save($user)) {
+            return false;
+        }
+
+        return true;
+    }
 
     /**
      * Checks if an email is in the system, validated and if the user is active so that the user is allowed to reset his password

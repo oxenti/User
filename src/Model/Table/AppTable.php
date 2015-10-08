@@ -19,5 +19,5 @@ class AppTable extends Table
     public static function defaultConnectionName()
     {
         return 'oxenti_user';
-    }
+    }   
 }

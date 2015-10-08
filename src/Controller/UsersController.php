@@ -3,6 +3,7 @@ namespace User\Controller;
 
 use Cake\Event\Event;
 use Cake\Network\Email\Email;
+use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
@@ -18,6 +19,25 @@ use User\Controller\AppController;
 class UsersController extends AppController
 {
 
+    /**
+     * beforeFilter method
+     * @param Event $event CakePHP event
+     * @return void
+     */
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        if (isset($this->Auth)) {
+            $this->Auth->allow(['getToken', 'add', 'verify', 'resetPassword', 'linkedinHandler']);
+        }
+    }
+
+    /**
+     * isAuthorized method
+     * Handles the user Authorization inside the controller.
+     * @param array $user Authorization component's user
+     * @return bool
+     */
     public function isAuthorized($user)
     {
         // Admin can access every action
@@ -35,24 +55,23 @@ class UsersController extends AppController
         return false;
     }
 
-    public function beforeFilter(Event $event)
-    {
-        parent::beforeFilter($event);
-        if( isset($this->Auth)){
-            $this->Auth->allow(['token', 'add', 'verify', 'reset_password', 'linkedin_handler']);            
-        }
-    }
-
+    /**
+     * logout method
+     */
     public function logout()
     {
         //ações para invalidar o token do usuario
-        return $this->redirect($this->Auth->logout());
+        return $this->Auth->logout();
     }
 
-    public function token()
+    /**
+     * getToken method
+     * returns the user's access token
+     */
+    public function getToken()
     {
-        $user = $this->Auth->identify();
-        if (!$user) {
+        $user = $this->Auth->identify([], 012);
+        if (! $user) {
             throw new UnauthorizedException('Invalid username or password');
         }
         $this->set([
@@ -64,6 +83,12 @@ class UsersController extends AppController
         ]);
     }
 
+    /**
+     * _makeToken method
+     * Generates the user's token based on the id
+     * @param int $userId User's id
+     * @return string
+     */
     protected function _makeToken($userId)
     {
         $token = \JWT::encode(
@@ -86,8 +111,8 @@ class UsersController extends AppController
         $finder = !isset($this->request->query['finder'])?'All': $this->request->query['finder'];
         $this->paginate = [
             'finder' => $finder,
-            'contain' => ['Usertypes', 'Genders'],
-            'order' => ['Users.first_name'],
+            'contain' => ['Usertypes', 'Personalinformations'],
+            'order' => ['Users.email'],
         ];
         
         $users = $this->paginate($this->Users);
@@ -107,7 +132,7 @@ class UsersController extends AppController
         $this->request->allowMethod(['get']);
         $user = $this->Users->find()
             ->where(['Users.id' => $userId])
-            ->contain(['Usertypes', 'Genders'])
+            ->contain(['Usertypes', 'Personalinformations'])
             ->first();
         if (!$user) {
             throw new NotFoundException('The user could not be found. Please, try again.');
@@ -124,22 +149,19 @@ class UsersController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post']);
-        $user = $this->Users->newEntity();
-        if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->data);
-            if ($this->Users->save($user)) {
-                $this->Users->sendVerificationEmail($user);
-                debug($user);
-                $message = 'The user has been saved.';
-                $this->set([
-                    'success' => true,
-                    'message' => $message,
-                    '_serialize' => ['success', 'message']
-                ]);
-            } else {
-                debug($user);
-                throw new NotFoundException('The user could not be saved. Please, try again.');
-            }
+
+        $user = $this->Users->newEntity($this->Users->formatRequestData($this->request->data));
+        if ($this->Users->save($user)) {
+            // $this->Users->sendVerificationEmail($user);
+            $message = 'The user has been saved.';
+            $this->set([
+                'success' => true,
+                'message' => $message,
+                '_serialize' => ['success', 'message']
+            ]);
+        } else {
+            throw new BadRequestException('The user could not be saved. ' . json_encode($user->errors()));
+            // throw new BadRequestException('The user could not be saved. ' . json_encode($user->errors(), JSON_PRETTY_PRINT));
         }
     }
 
@@ -195,33 +217,36 @@ class UsersController extends AppController
      */
     public function verify($emailcheckcode = null)
     {
-        $this->request->allowMethod(['put']);
-        if ($emailcheckcode != null) {
-            $this->request->data['emailcheckcode'] = $emailcheckcode;
+        if (! $emailcheckcode) {
+            $emailcheckcode = isset($this->request->query['code']) ? $this->request->query['code'] : null;
         }
-        if ($this->request->is('put')) {
-            $user = $this->Users->find('all', [
-                'conditions' => [
-                    'emailcheckcode' => $this->request->data['emailcheckcode']
-                ]
-            ])->first();
-            if (empty($user)) {
-                throw new NotFoundException(__('Bad identification data'));
+
+        if (! $emailcheckcode) {
+            throw new BadRequestException(__('Invalid code provided'));
+        }
+        
+        $user = $this->Users->find('all', [
+            'conditions' => [
+                'emailcheckcode' => $emailcheckcode
+            ]
+        ])->first();
+
+        if (empty($user)) {
+            throw new NotFoundException(__('Code not found'));
+        } else {
+            $user->emailcheckcode = '';
+            if ($this->Users->save($user)) {
+                $message = __('The confirmation code has been accepted. You may log in now!');
+                $success = true;
             } else {
-                $user->emailcheckcode = '';
-                if ($this->Users->save($user)) {
-                    $message = __('The confirmation code has been accepted. You may log in now!');
-                    $success = true;
-                } else {
-                    $message = __('Try again');
-                    $success = 'error';
-                }
-                $this->set([
-                    'success' => $success,
-                    'message' => $message,
-                    '_serialize' => ['success', 'message']
-                ]);
+                $message = __('Try again');
+                $success = 'error';
             }
+            $this->set([
+                'success' => $success,
+                'message' => $message,
+                '_serialize' => ['success', 'message']
+            ]);
         }
     }
 
@@ -233,41 +258,53 @@ class UsersController extends AppController
      *
      * @return void
      */
-    public function reset_password()
+    public function resetPassword()
     {
-        if ($this->request->is('post')) {
-            if (isset($this->request->data['passwordchangecode'])) {
-                $this->_resetPassword($this->request->data['passwordchangecode']);
-            } else {
-                $this->_sendPasswordResetCode($this->request->data);
-            }
+        $this->request->allowMethod('post');
+
+        $code = isset($this->request->data['code']) ? $this->request->data['code'] : null;
+        $email = isset($this->request->data['email']) ? $this->request->data['email'] : null;
+        $newPass = isset($this->request->data['password']) ? $this->request->data['password'] : null;
+
+        if ((!$code) || (!$email) || (!$newPass)) {
+            throw new BadRequestException(__('Empty data provided'));
         }
+
+        if (! $this->Users->resetPassword($code, $email, $newPass)) {
+            throw new BadRequestException(__('Password could not be updated'));
+        }
+
+        $this->set([
+            'success' => true,
+            'message' => 'Password updated',
+            '_serialize' => ['success', 'message']
+        ]);
     }
 
-    /**
-     * This method allows the user to change his password if the reset token is correct
-     *
-     * @param string $passwordchangecode Token
-     * @return void
-     */
-    protected function _resetPassword($passwordChangeCode)
-    {
-        $user = $this->Users->checkPasswordToken($passwordChangeCode);
-        if (!$user) {
-            throw new NotFoundException(__('Invalid password change Code'));
-        }
-        if (!empty($this->request->data) && $this->Users->resetPassword($user, $this->request->data)) {
-            $message = __('Password changed');
-            $success = true;
-            $this->set([
-                'success' => $success,
-                'message' => $message,
-                '_serialize' => ['success', 'message']
-            ]);
-        } else {
-            throw new NotFoundException(__('Invalid password'));
-        }
-    }
+    // /**
+    //  * This method allows the user to change his password if the reset token is correct
+    //  *
+    //  * @param string $passwordchangecode Token
+    //  * @return void
+    //  */
+    // protected function _resetPassword($passwordChangeCode)
+    // {
+    //     $user = $this->Users->checkPasswordToken($passwordChangeCode);
+    //     if (!$user) {
+    //         throw new NotFoundException(__('Invalid password change Code'));
+    //     }
+    //     if (!empty($this->request->data) && $this->Users->resetPassword($user, $this->request->data)) {
+    //         $message = __('Password changed');
+    //         $success = true;
+    //         $this->set([
+    //             'success' => $success,
+    //             'message' => $message,
+    //             '_serialize' => ['success', 'message']
+    //         ]);
+    //     } else {
+    //         throw new NotFoundException(__('Invalid password'));
+    //     }
+    // }
 
     /**
      * Checks if the email is in the system and authenticated, if yes create the token
@@ -316,7 +353,7 @@ class UsersController extends AppController
      *
      * @return void
      */
-    public function send_verification()
+    public function sendVerificationEmail()
     {
         $user = $this->Users->get($this->Auth->user('id'));
         if (empty($user->emailcheckcode)) {
@@ -340,8 +377,13 @@ class UsersController extends AppController
         ]);
     }
 
-    public function linkedin_handler()
+    /**
+     * linkedinHandler
+     * LinkedIn oauth2 login callback
+     */
+    public function linkedinHandler()
     {
+        $this->autoRender = false;
         $this->request->allowMethod(['post']);
         if ($this->request->data) {
             $token = $this->request->data['usersocialdata']['linkedin_token'];

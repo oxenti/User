@@ -1,13 +1,13 @@
 <?php
 namespace User\Test\Fixture;
 
-use Cake\TestSuite\Fixture\TestFixture;
+use User\Test\Fixture\AppFixture;
 
 /**
  * GendersFixture
  *
  */
-class GendersFixture extends TestFixture
+class GendersFixture extends AppFixture
 {
 
     /**
@@ -17,7 +17,7 @@ class GendersFixture extends TestFixture
      */
     // @codingStandardsIgnoreStart
     public $fields = [
-        'id' => ['type' => 'integer', 'length' => 10, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
+        'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
         'name' => ['type' => 'string', 'length' => 45, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'fixed' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],

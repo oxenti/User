@@ -113,7 +113,5 @@ class UserjuridicaltypesTableTest extends TestCase
         $this->assertFalse(isset($case['create']), 'case4 retornou erro para create inixistente' . json_encode($case4));
         $this->assertFalse(isset($case['modified']), 'case4 retornou erro para modified inixistente' . json_encode($case4));
         $this->assertFalse(isset($case['modified']), 'case4 retornou erro para is_active vazio' . json_encode($case4));
-        //$this->assertNotEmpty($this->Userjuridicaltypes, 'testValidationDefault na classe UserjuridicaltypesTableTest');
-        //$this->markTestIncomplete('Not implemented yet.');
     }
 }

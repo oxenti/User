@@ -50,4 +50,58 @@ In your app's 'config/app.php' add this to your Datasources array:
         'log' => false,
         'quoteIdentifiers' => false,
     ],
+    'test_oxenti_user' => [
+        'className' => 'Cake\Database\Connection',
+        'driver' => 'Cake\Database\Driver\Mysql',
+        'persistent' => false,
+        'host' => 'ỳour_db_host',
+        'username' => 'username',
+        'password' => 'password',
+        'database' => 'databse_name',
+        'encoding' => 'utf8',
+        'timezone' => 'UTC',
+        'cacheMetadata' => true,
+        'log' => false,
+        'quoteIdentifiers' => false,
+    ],
+```
+In your app's 'AppController.php' set up the Auth componet:
+```php
+    ...
+    $this->loadComponent('Auth', [
+        'authorize' => ['Controller'],
+        'authenticate' => [
+            'Form' => [
+                'userModel' => 'User.Users',
+                'fields' => [
+                    'username' => 'email',
+                    'password' => 'password'
+                ]
+            ],
+            'User.Jwt' => [
+                'parameter' => '_token',
+                'userModel' => 'User.Users',
+                'scope' => ['Users.is_active' => 1],
+                'fields' => [
+                    'id' => 'id'
+                ],
+            ]
+        ],
+        'unauthorizedRedirect' => false
+    ]);
+    ...
+```
+
+Add the beforeFilter and isAuthorized methods:
+```php
+    public function beforeFilter(Event $event)
+    {
+        $this->Auth->deny(['*']);
+        $this->Auth->allow(['display']);
+    }
+
+    public function isAuthorized($user)
+    {
+        return false;
+    }
 ```
