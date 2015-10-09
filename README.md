@@ -16,7 +16,7 @@ The recommended way to install composer packages is:
 composer require oxenti/user
 ```
 
-## Usage
+## Configuration
 
 In your app's `config/bootstrap.php` add:
 
@@ -30,8 +30,6 @@ or using cake's console:
 ```sh
 ./bin/cake plugin load User
 ```
-
-## Configuration
 
 In your app's 'config/app.php' add this to your Datasources array:
 
@@ -105,3 +103,23 @@ Add the beforeFilter and isAuthorized methods:
         return false;
     }
 ```
+
+### Configuration files
+Move the 'address.php' config file from the plugin's config folder to your app's config folder.
+
+On your app's 'bootstrap.php' add the address configuration file:
+```php
+    ...
+    try {
+        Configure::config('default', new PhpConfig());
+        Configure::load('app', 'default', false);
+    } catch (\Exception $e) {
+        die($e->getMessage() . "\n");
+    }
+
+    Configure::load('address', 'default');
+    ...
+```
+
+## Using extrenal Associations
+If you want to associate the Address table with other tables on your application, use the address.php configuration file setting the 'relations' entry to your needs.
