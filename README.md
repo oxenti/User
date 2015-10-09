@@ -105,9 +105,9 @@ Add the beforeFilter and isAuthorized methods:
 ```
 
 ### Configuration files
-Move the 'address.php' config file from the plugin's config folder to your app's config folder.
+Move the 'user.php' config file from the plugin's config folder to your app's config folder.
 
-On your app's 'bootstrap.php' add the address configuration file:
+On your app's 'bootstrap.php' add the user configuration file:
 ```php
     ...
     try {
@@ -117,7 +117,7 @@ On your app's 'bootstrap.php' add the address configuration file:
         die($e->getMessage() . "\n");
     }
 
-    Configure::load('address', 'default');
+    Configure::load('user', 'default');
     ...
 ```
 
