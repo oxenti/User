@@ -29,8 +29,6 @@ class UsersTable extends AppTable
      */
     public function initialize(array $config)
     {
-        Configure::load('User.user_relations');
-
         parent::initialize($config);
 
         $this->table('users');
@@ -131,7 +129,6 @@ class UsersTable extends AppTable
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['email']));
-        // $rules->add($rules->isUnique(['emailcheckcode']));
         $rules->add($rules->existsIn(['usertype_id'], 'Usertypes'));
         return $this->_setExtraBuildRules($rules, Configure::read('user_plugin.rules'));
     }
@@ -178,7 +175,10 @@ class UsersTable extends AppTable
     }
 
     /**
-     *
+     * hash methdo
+     * Creates a hashed password using the DefaultPasswordHaser class
+     * @param string $value Plani text password
+     * @return string Hashed passowrd
      */
     public function hash($value)
     {
@@ -208,7 +208,6 @@ class UsersTable extends AppTable
                 unset($data['User'][$field]);
             }
         }
-        // $allowedR
 
         return $data;
     }
