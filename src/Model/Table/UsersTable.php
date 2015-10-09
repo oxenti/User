@@ -55,11 +55,7 @@ class UsersTable extends AppTable
             'className' => 'User.Usersocialdata'
         ]);
 
-        foreach (Configure::read('relations') as $type => $relations) {
-            foreach ($relations as $relationName => $relationProprities) {
-                $this->$type($relationName, $relationProprities);
-            }
-        }
+        $this->_setAppRelations(Configure::read('user_plugin.relations'));
     }
 
     /**
@@ -125,7 +121,6 @@ class UsersTable extends AppTable
         }
     }
 
-
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
@@ -135,11 +130,10 @@ class UsersTable extends AppTable
      */
     public function buildRules(RulesChecker $rules)
     {
-        // $rules->add($rules->isUnique(['login']));
         $rules->add($rules->isUnique(['email']));
         // $rules->add($rules->isUnique(['emailcheckcode']));
         $rules->add($rules->existsIn(['usertype_id'], 'Usertypes'));
-        return $rules;
+        return $this->_setExtraBuildRules($rules, Configure::read('user_plugin.rules'));
     }
 
     /**
