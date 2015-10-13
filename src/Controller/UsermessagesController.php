@@ -81,7 +81,7 @@ class UsermessagesController extends AppController
             ->andwhere(['Usermessages.id' => $id])
             ->first();
         if (is_null($usermessage)) {
-            throw new NotFoundException(__('The message could not be finded'));
+            throw new NotFoundException(__('The message could not be found'));
         }
         $this->set('usermessage', $usermessage);
         $this->set('_serialize', ['usermessage']);

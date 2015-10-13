@@ -6,6 +6,7 @@
         "php": ">=5.4.16",
         "cakephp/cakephp": "~3.0",
         "admad/cakephp-jwt-auth": "1.0.x-dev",
+        "oxenti/soft-delete": "dev-master",
         "happyr/linkedin-api-client": "dev-master"
     },
     "require-dev": {
