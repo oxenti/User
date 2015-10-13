@@ -19,7 +19,6 @@ class LinkedinLib extends LinkedIn
     
     public function linkedinget($resource, $token)
     {
-        $linkedIn = new LinkedIn('77y82deosa7au1', 'RkTgREyE7ysqyl6d');
         $method = 'GET';
         $options = [];
 
