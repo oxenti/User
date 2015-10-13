@@ -149,10 +149,8 @@ class UsersController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post']);
-
-        $user = $this->Users->newEntity($this->Users->formatRequestData($this->request->data));
-        if ($this->Users->save($user)) {
-            // $this->Users->sendVerificationEmail($user);
+        $user = $this->Users->saveUser($this->request->data);
+        if ($user) {
             $message = 'The user has been saved.';
             $this->set([
                 'success' => true,

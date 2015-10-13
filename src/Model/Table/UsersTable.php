@@ -119,6 +119,20 @@ class UsersTable extends AppTable
         }
     }
 
+    public function saveUser(Array $data)
+    {
+        $user = $this->newEntity($this->formatRequestData($data));
+        if (! $this->save($user)) {
+            return false;
+        }
+
+        // if (! $this->Users->sendVerificationEmail($user)) {
+        //     return false;
+        // }
+
+        return $user;
+    }
+
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
