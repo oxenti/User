@@ -3,6 +3,7 @@ namespace User\Test\TestCase\Controller;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
+use Cake\Utility\Security;
 use User\Controller\UsersController;
 
 /**
@@ -10,43 +11,54 @@ use User\Controller\UsersController;
  */
 class UsersControllerTest extends IntegrationTestCase
 {
-
     /**
      * Fixtures
      *
      * @var array
      */
     public $fixtures = [
+        'plugin.user.personalinformations',
         'plugin.user.users',
         'plugin.user.usertypes',
         'plugin.user.userjuridicaltypes',
-        'plugin.user.genders',
-        'plugin.user.usermessages',
         'plugin.user.usersocialdata',
-        // 'plugin.user.addresses',
-        // 'plugin.user.cities',
-        // 'plugin.user.states',
-        // 'plugin.user.countries',
     ];
 
+    public $basicToken = '';
 
-    public function tokenProvider()
+    public function setup()
     {
-        $token = [];
+        // Add a new user
         $data = [
-            'email' => 'root@root.com',
-            'password' => 'qwe123'
+            'usertype_id' => 1,
+            'gender_id' => 1,
+            'first_name' => 'usuario',
+            'last_name' => 'teste ',
+            'email' => 'tokenuser@test.com',
+            'password' => 'qwe123',
+            'created' => ''
         ];
+
         $this->configRequest([
             'headers' => ['Accept' => 'application/json']
         ]);
-        $this->post('/user/users/token', $data);
-        // debug($this->_response->body());die();
-        $respondeData = json_decode($this->_response->body());
-        $token['Admin'] = 'Bearer ' . $respondeData->data->token;
-        return [[$token]];
-    }
+        $this->post('/user/users', $data);
+        $responseData = json_decode($this->_response->body());
+        $this->assertResponseSuccess();
 
+        $data = [
+            'email' => 'tokenuser@test.com',
+            'password' => 'qwe123',
+        ];
+        
+        $this->configRequest([
+            'headers' => ['Accept' => 'application/json']
+        ]);
+        $this->post('/user/users/get_token', $data);
+        $responseData = json_decode($this->_response->body());
+        $this->basicToken = 'Bearer ' . $responseData->data->token;
+    }
+    
     /**
      * Test token method
      *
@@ -55,17 +67,17 @@ class UsersControllerTest extends IntegrationTestCase
     public function testValidToken()
     {
         $data = [
-            'email' => 'root@root.com',
+            'email' => 'tokenuser@test.com',
             'password' => 'qwe123'
         ];
         $this->configRequest([
             'headers' => ['Accept' => 'application/json']
         ]);
-        $this->post('/user/users/token', $data);
+        $this->post('/user/users/get_token', $data);
         $this->assertResponseOk();
         $this->assertResponseContains('"success": true');
-        $respondeData = json_decode($this->_response->body());
-        $this->token['Admin'] = 'Bearer ' . $respondeData->data->token;
+        $responseData = json_decode($this->_response->body());
+        $this->token['Admin'] = 'Bearer ' . $responseData->data->token;
     }
 
     /**
@@ -76,26 +88,26 @@ class UsersControllerTest extends IntegrationTestCase
     public function testInvalidToken()
     {
         $data = [
-            'email' => 'root@root.com',
+            'email' => 'tokenuser@test.com',
             'password' => 'qwe11'
         ];
         $this->configRequest([
             'headers' => ['Accept' => 'application/json']
         ]);
-        $requestResult = $this->post('/user/users/token', $data);
+        $this->post('/user/users/get_token', $data);
         $this->assertResponseError();
     }
 
     /**
      * Test index method
-     * @dataProvider tokenProvider
+     *
      */
-    public function testIndex($token)
+    public function testIndex()
     {
         $this->configRequest([
-            'headers' => ['Accept' => 'application/json', 'Authorization' => $token['Admin']]
+            'headers' => ['Accept' => 'application/json', 'Authorization' => $this->basicToken]
         ]);
-        $result = $this->get('/user/users');
+        $this->get('/user/users');
 
         $this->assertResponseOk();
         
@@ -103,7 +115,9 @@ class UsersControllerTest extends IntegrationTestCase
         $count = count($respondeData->users);
 
         $users = TableRegistry::get('User.Users');
-        $query = $users->find('all')->contain(['Usertypes', 'Genders']);
+        $query = $users->find('all')
+            ->contain(['Usertypes', 'Personalinformations'])
+            ->order('Users.email');
         // debug($query);
         $usersJson = json_encode(['users' => $query], JSON_PRETTY_PRINT);
         
@@ -113,22 +127,23 @@ class UsersControllerTest extends IntegrationTestCase
 
     /**
      * Test info method
-     * @dataProvider tokenProvider
+     *
      * @return void
      */
-    public function testView($token)
+    public function testView()
     {
         $this->configRequest([
-            'headers' => ['Accept' => 'application/json', 'Authorization' => $token['Admin']]
+            'headers' => ['Accept' => 'application/json', 'Authorization' => $this->basicToken]
         ]);
-        $result = $this->get('/user/users/view/1');
+
+        $this->get('/user/users/view/1');
 
         // Check that the response was a 200
         $this->assertResponseOk();
         $users = TableRegistry::get('User.Users');
         $user = $users->find()
             ->where(['Users.id' => 1])
-            ->contain(['Usertypes', 'Genders'])
+            ->contain(['Usertypes', 'Personalinformations'])
             ->first();
         $usersJson = json_encode(['user' => $user], JSON_PRETTY_PRINT);
         $this->assertEquals($usersJson, $this->_response->body());
@@ -141,7 +156,7 @@ class UsersControllerTest extends IntegrationTestCase
      */
     public function testInfoUnauthorized()
     {
-        $result = $this->get('/user/users/view/1');
+        $this->get('/user/users/view/1');
         $this->assertResponseError();
     }
 
@@ -173,10 +188,10 @@ class UsersControllerTest extends IntegrationTestCase
 
     /**
      * Test edit method
-     * @dataProvider tokenProvider
+     *
      * @return void
      */
-    public function testEditWithoutAddress($token)
+    public function testEditWithoutAddress()
     {
         $data = [
             'id' => 1,
@@ -189,7 +204,7 @@ class UsersControllerTest extends IntegrationTestCase
         ];
 
         $this->configRequest([
-            'headers' => ['Accept' => 'application/json', 'Authorization' => $token['Admin']]
+            'headers' => ['Accept' => 'application/json', 'Authorization' => $this->basicToken]
         ]);
         $this->put('/user/users/1', $data);
 
@@ -268,53 +283,66 @@ class UsersControllerTest extends IntegrationTestCase
     public function testVerifyEmail()
     {
         $users = TableRegistry::get('User.Users');
-        $data = [
-            'emailcheckcode' => 'Lorem ipsum dolor sit amet'
-        ];
+        
+        $userId = $users->find()->where(['emailcheckcode' => 'w4d98c4w6d5c4w9dc6wd5c46w4cd9wdc'])->first()->id;
+        
         $this->configRequest([
             'headers' => ['Accept' => 'application/json']
         ]);
-        $user = $users->find()->where(['emailcheckcode' => $data['emailcheckcode']])->first();
-        $this->put('/user/users/verify', $data);
+        $this->get('/user/users/verify/?code=w4d98c4w6d5c4w9dc6wd5c46w4cd9wdc');
         $this->assertResponseSuccess();
-        $user = $users->find()->where(['id' => $user->id ])->first();
+
+        $user = $users->find()->where(['id' => $userId ])->first();
         $this->assertEquals('', $user->emailcheckcode);
-        //try to verify an invalid check code.
-    }
+        
 
-    /**
-     * Test verify method
-     * @dataProvider tokenProvider
-     * @return void
-     */
-    public function testResendVerification($token)
-    {
-        $users = TableRegistry::get('User.Users');
         $this->configRequest([
-            'headers' => ['Accept' => 'application/json', 'Authorization' => $token['Admin']]
+            'headers' => ['Accept' => 'application/json']
         ]);
-
-        $user = $users->get(1);
-        $oldCode = $user->emailcheckcode;
-        $this->get('/user/users/send_verification');
-        $this->assertResponseSuccess();
-        $user = $users->get(1);
-        $newCode = $user->emailcheckcode;
-
-        $this->assertNotEquals($oldCode, $newCode, 'Os codigos de verificação de email devem ser diferente');
-        //try to resend a emial to a verified user
-
-        $data = [
-            'emailcheckcode' => $newCode
-        ];
-        $this->configRequest([
-            'headers' => ['Accept' => 'application/json', 'Authorization' => $token['Admin']]
-        ]);
-        $this->put('/user/users/verify', $data);
-        $this->assertResponseOk();
-        $this->put('/user/users/verify', $data);
+        $this->get('/user/users/verify/?code=w4d98c4w6d5c4w9dc6wd5c46w4cd9wdc');
         $this->assertResponseError();
+
+        $this->configRequest([
+            'headers' => ['Accept' => 'application/json']
+        ]);
+        $this->get('/user/users/verify/?w4d98c4w6d5c4w9dc6wd5c46w4cd9wdc');
+        $this->assertResponseError();
+
+        $userId = $users->find()->where(['emailcheckcode' => '11111111111111111111111111111111111'])->first()->id;
+
+        $this->configRequest([
+            'headers' => ['Accept' => 'application/json']
+        ]);
+        $this->get('/user/users/verify/?code=11111111111111111111111111111111111');
+        $this->assertResponseSuccess();
+
+        $user = $users->find()->where(['id' => $userId ])->first();
+        $this->assertEquals('', $user->emailcheckcode);
+
     }
+
+    // /**
+    //  * Test verify method
+    //  *
+    //  * @return void
+    //  */
+    // public function testResendVerification()
+    // {
+    //     $users = TableRegistry::get('User.Users');
+    //     $this->configRequest([
+    //         'headers' => ['Accept' => 'application/json', 'Authorization' => $this->basicToken]
+    //     ]);
+
+    //     $user = $users->get(1);
+    //     $oldCode = $user->emailcheckcode;
+    //     $this->get('/user/users/send_verification_email');
+    //     $this->assertResponseSuccess();
+    //     $user = $users->get(1);
+    //     $newCode = $user->emailcheckcode;
+
+    //     $this->assertNotEquals($oldCode, $newCode, 'Os codigos de verificação de email devem ser diferente');
+    //     //try to resend a email to a verified user
+    // }
 
     /**
      * Test verify method
@@ -347,11 +375,14 @@ class UsersControllerTest extends IntegrationTestCase
     public function testResetPasswordSendEmailCode()
     {
         $users = TableRegistry::get('User.Users');
-        $data = [
-            'email' => 'root@root.com',
-            'url' => 'www.acadios.com.br/reset_password'
-        ];
+        
         $olPasswordChangeCode = $users->get(1)->passwordchangecode;
+        
+        $data = [
+            'email' => $users->get(1)->email,
+            'code' => $olPasswordChangeCode,
+            'password' => "qwe123"
+        ];
 
         $this->configRequest([
             'headers' => ['Accept' => 'application/json']
@@ -361,53 +392,6 @@ class UsersControllerTest extends IntegrationTestCase
         $passwordChangeCode = $users->get(1)->passwordchangecode;
 
         $this->assertNotEquals($passwordChangeCode, $olPasswordChangeCode, 'message');
-    }
-
-
-    /**
-     * Test reset_password method
-     * Test verify reset password
-     * @return void
-     */
-    public function testResetPasswordWithCode()
-    {
-        $users = TableRegistry::get('User.Users');
-        $data = [
-            'passwordchangecode' => 'Lorem ipsum dolor sit amet',
-            'new_password' => 'Senha de Test',
-            'confirm_password' => 'Senha de Test'
-        ];
-        $oldPassword = $users->get(1)->password;
-        $this->configRequest([
-            'headers' => ['Accept' => 'application/json']
-        ]);
-        $this->post('/user/users/reset_password', $data);
-        $this->assertResponseOk();
-
-        $user = $users->get(1);
-        $this->assertNotEquals($oldPassword, $user->password, 'Verificar que os password sao diferentes');
-        $this->assertEmpty($user->passwordchangecode, 'message');
-        $data = [
-            'passwordchangecode' => 'Codigo invalido',
-            'new_password' => 'Senha de Test',
-            'confirm_password' => 'Senha de Test'
-        ];
-        $this->configRequest([
-            'headers' => ['Accept' => 'application/json']
-        ]);
-        $this->post('/user/users/reset_password', $data);
-        $this->assertResponseError();
-        
-        $data = [
-            'passwordchangecode' => 'Lorem ipsum dolor sit amet',
-            'new_password' => 'Senha de Test',
-            'confirm_password' => 'Senha de diferente'
-        ];
-        $this->configRequest([
-            'headers' => ['Accept' => 'application/json']
-        ]);
-        $this->post('/user/users/reset_password', $data);
-        $this->assertResponseError();
     }
 
     /**

@@ -20,10 +20,6 @@ class UsertypesTableTest extends TestCase
         'plugin.user.usertypes',
         'plugin.user.userjuridicaltypes',
         'plugin.user.users',
-        // 'plugin.user.genders',
-        // 'plugin.user.usermessages',
-        // 'plugin.user.sender',
-        // 'plugin.user.receiver'
     ];
 
     /**
@@ -34,7 +30,7 @@ class UsertypesTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Usertypes') ? [] : ['className' => 'User\Model\Table\UsertypesTable'];
+        $config = TableRegistry::exists('User.Usertypes') ? [] : ['className' => 'User\Model\Table\UsertypesTable'];
         $this->Usertypes = TableRegistry::get('User.Usertypes', $config);
     }
 

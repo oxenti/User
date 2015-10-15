@@ -1,13 +1,13 @@
 <?php
 namespace User\Test\Fixture;
 
-use Cake\TestSuite\Fixture\TestFixture;
+use User\Test\Fixture\AppFixture;
 
 /**
  * UsertypesFixture
  *
  */
-class UsertypesFixture extends TestFixture
+class UsertypesFixture extends AppFixture
 {
 
     /**
@@ -43,24 +43,28 @@ class UsertypesFixture extends TestFixture
      */
     public $records = [
         [
+            'id' => 1,
             'userjuridicaltype_id' => 1,
             'name' => 'Aluno',
             'created' => '2015-09-15 14:22:14',
             'modified' => '2015-09-15 14:22:14'
         ],
         [
+            'id' => 2,
             'userjuridicaltype_id' => 2,
             'name' => 'Instituicao',
             'created' => '2015-09-15 14:22:14',
             'modified' => '2015-09-15 14:22:14'
         ],
         [
+            'id' => 3,
             'userjuridicaltype_id' => 1,
             'name' => 'Professor',
             'created' => '2015-09-15 14:22:14',
             'modified' => '2015-09-15 14:22:14'
         ],
         [
+            'id' => 4,
             'userjuridicaltype_id' => 1,
             'name' => 'Tutor',
             'created' => '2015-09-15 14:22:14',

@@ -5,16 +5,15 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use User\Model\Entity\Usersocialdata;
-use User\Model\Table\AppTable;
+use User\Model\Entity\Personalinformation;
 
 /**
- * Usersocialdata Model
+ * Personalinformations Model
  *
  * @property \Cake\ORM\Association\BelongsTo $Users
- * @property \Cake\ORM\Association\BelongsTo $Linkedins
+ * @property \Cake\ORM\Association\BelongsTo $Genders
  */
-class UsersocialdataTable extends AppTable
+class PersonalinformationsTable extends Table
 {
 
     /**
@@ -27,7 +26,7 @@ class UsersocialdataTable extends AppTable
     {
         parent::initialize($config);
 
-        $this->table('usersocialdata');
+        $this->table('personalinformations');
         $this->displayField('id');
         $this->primaryKey('id');
 
@@ -37,6 +36,11 @@ class UsersocialdataTable extends AppTable
             'foreignKey' => 'user_id',
             'joinType' => 'INNER',
             'className' => 'User.Users'
+        ]);
+        $this->belongsTo('Genders', [
+            'foreignKey' => 'gender_id',
+            'joinType' => 'INNER',
+            'className' => 'User.Genders'
         ]);
     }
 
@@ -53,7 +57,33 @@ class UsersocialdataTable extends AppTable
             ->allowEmpty('id', 'create');
 
         $validator
-            ->allowEmpty('linkedin_token');
+            ->add('user_id', 'valid', ['rule' => 'numeric'])
+            ->allowEmpty('user_id');
+
+        $validator
+            ->requirePresence('gender_id', 'create')
+            ->notEmpty('gender_id');
+
+        $validator
+            ->requirePresence('first_name', 'create')
+            ->notEmpty('first_name');
+
+        $validator
+            ->requirePresence('last_name', 'create')
+            ->notEmpty('last_name');
+
+        $validator
+            ->add('birth', 'valid', ['rule' => 'date', 'dmy'])
+            ->requirePresence('birth', 'create')
+            ->notEmpty('birth');
+
+        $validator
+            ->requirePresence('phone1', 'create')
+            ->notEmpty('phone1');
+
+        $validator
+            ->allowEmpty('phone2');
+
 
         return $validator;
     }
@@ -67,7 +97,19 @@ class UsersocialdataTable extends AppTable
      */
     public function buildRules(RulesChecker $rules)
     {
+        $rules->add($rules->isUnique(['user_id']));
         $rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->existsIn(['gender_id'], 'Genders'));
         return $rules;
+    }
+
+    /**
+     * Returns the database connection name to use by default.
+     *
+     * @return string
+     */
+    public static function defaultConnectionName()
+    {
+        return 'oxenti_user';
     }
 }

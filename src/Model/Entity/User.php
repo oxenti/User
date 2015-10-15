@@ -10,14 +10,7 @@ use Cake\ORM\Entity;
  * @property int $id
  * @property int $usertype_id
  * @property \User\Model\Entity\Usertype $usertype
- * @property int $gender_id
- * @property \User\Model\Entity\Gender $gender
- * @property string $first_name
- * @property string $last_name
- * @property \Cake\I18n\Time $birth
  * @property string $avatar_path
- * @property string $phone1
- * @property string $phone2
  * @property string $login
  * @property string $password
  * @property string $email
@@ -27,13 +20,6 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\Time $expire_account
  * @property \Cake\I18n\Time $created
  * @property \Cake\I18n\Time $modified
- * @property \User\Model\Entity\Address[] $addresses
- * @property \User\Model\Entity\Institution[] $institutions
- * @property \User\Model\Entity\Resource[] $resources
- * @property \User\Model\Entity\Student[] $students
- * @property \User\Model\Entity\Teacher[] $teachers
- * @property \User\Model\Entity\Tutor[] $tutors
- * @property \User\Model\Entity\Usermessage[] $usermessages
  * @property \User\Model\Entity\Usersocialdata[] $usersocialdata
  */
 class User extends Entity
@@ -55,7 +41,7 @@ class User extends Entity
 
     protected $_virtual = ['full_name'];
 
-    protected $_hidden = ['password', 'login', 'emailcheckcode', 'passwordchangecode', 'expire_account', 'created', 'gender_id', 'is_active', 'modified'];
+    protected $_hidden = ['password', 'login', 'emailcheckcode', 'passwordchangecode', 'expire_account', 'created', 'is_active', 'modified'];
 
     /**
      * Set Hashed password, before save
@@ -71,7 +57,8 @@ class User extends Entity
      */
     protected function _getFullName()
     {
-        return $this->_properties['first_name'] . ' ' .
-            $this->_properties['last_name'];
+        return '';
+        // return $this->_properties['personalinformation']['first_name'] . ' ' .
+        //     $this->_properties['personalinformation']['last_name'];
     }
 }

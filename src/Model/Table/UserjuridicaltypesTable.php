@@ -6,13 +6,14 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use User\Model\Table\AppTable;
 
 /**
  * Userjuridicaltypes Model
  *
  * @property \Cake\ORM\Association\HasMany $Usertypes
  */
-class UserjuridicaltypesTable extends Table
+class UserjuridicaltypesTable extends AppTable
 {
 
     /**

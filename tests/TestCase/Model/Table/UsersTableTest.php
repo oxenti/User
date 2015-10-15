@@ -6,7 +6,7 @@ use Cake\TestSuite\TestCase;
 use User\Model\Table\UsersTable;
 
 /**
- * User\Model\Table\UsersTable Test Case
+ * oxenti\User\Model\Table\UsersTable Test Case
  */
 class UsersTableTest extends TestCase
 {
@@ -21,7 +21,7 @@ class UsersTableTest extends TestCase
         'plugin.user.usertypes',
         'plugin.user.userjuridicaltypes',
         'plugin.user.genders',
-        // 'plugin.user.addresses',
+        'plugin.user.personalinformations',
     ];
 
     /**
@@ -33,7 +33,7 @@ class UsersTableTest extends TestCase
     {
         parent::setUp();
         $config = TableRegistry::exists('Users') ? [] : ['className' => 'User\Model\Table\UsersTable'];
-        $this->Users = TableRegistry::get('User.Users', $config);
+        $this->Users = TableRegistry::get('Users', $config);
     }
 
     /**
@@ -143,16 +143,6 @@ class UsersTableTest extends TestCase
     }
 
     /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize()
-    {
-        //$this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
      * Test validationDefault method
      * @dataProvider additionProvider
      * @return void
@@ -169,15 +159,10 @@ class UsersTableTest extends TestCase
         $expected = ['_empty' => 'This field cannot be left empty'];
         $this->assertNotEmpty($case3, 'Case3 é invalido mas naõ retornou erro ');
         $this->assertEquals($expected, $case3['usertype_id'], 'Case3 retorno messagem inesperada para usertype_id vazio: ' . json_encode($case3));
-        $this->assertEquals($expected, $case3['gender_id'], 'Case3 retorno messagem inesperada para gender_id vazio: ' . json_encode($case3));
-        $this->assertEquals($expected, $case3['first_name'], 'Case3 retorno messagem inesperada para first_name vazio: ' . json_encode($case3));
-        $this->assertEquals($expected, $case3['last_name'], 'Case3 retorno messagem inesperada para last_name vazio: ' . json_encode($case3));
         $this->assertEquals($expected, $case3['password'], 'Case3 retorno messagem inesperada para password vazio: ' . json_encode($case3));
         $this->assertEquals($expected, $case3['email'], 'Case3 retorno messagem inesperada para email vazio: ' . json_encode($case3));
         $this->assertEquals($expected, $case3['is_active'], 'Case3 retorno messagem inesperada para is_active vazio: ' . json_encode($case3));
         $this->assertArrayNotHasKey('avatar_path', $case3, 'Case3 retorno erro para avatar_path: ' . json_encode($case3));
-        $this->assertArrayNotHasKey('phone1', $case3, 'Case3 retorno erro para phone1: ' . json_encode($case3));
-        $this->assertArrayNotHasKey('phone2', $case3, 'Case3 retorno erro para phone2: ' . json_encode($case3));
         $this->assertArrayNotHasKey('emailcheckcode', $case3, 'Case3 retorno erro para emailcheckcode: ' . json_encode($case3));
         $this->assertArrayNotHasKey('passwordchangecode', $case3, 'Case3 retorno erro para passwordchangecode: ' . json_encode($case3));
         $this->assertArrayNotHasKey('expire_account', $case3, 'Case3 retorno erro para expire_account: ' . json_encode($case3));
@@ -186,9 +171,6 @@ class UsersTableTest extends TestCase
         $expected = ['_required' => 'This field is required'];
         $this->assertNotEmpty($case4, 'Case4 é invalido mais não retornou erro');
         $this->assertEquals($expected, $case4['usertype_id'], 'Erro inesperado no case4 para usertype_id: ' . json_encode($case4));
-        $this->assertEquals($expected, $case4['gender_id'], 'Erro inesperado no case4 para gender_id: ' . json_encode($case4));
-        $this->assertEquals($expected, $case4['first_name'], 'Erro inesperado no case4 para first_name: ' . json_encode($case4));
-        $this->assertEquals($expected, $case4['last_name'], 'Erro inesperado no case4 para last_name: ' . json_encode($case4));
         $this->assertEquals($expected, $case4['password'], 'Erro inesperado no case4 para password: ' . json_encode($case4));
         $this->assertEquals($expected, $case4['email'], 'Erro inesperado no case4 para email: ' . json_encode($case4));
 
@@ -197,22 +179,14 @@ class UsersTableTest extends TestCase
         $this->assertNotEmpty($case5, 'Case5 é invalido mas não retornou erro');
         $this->assertEquals($expected, $case5['id'], 'case5 retornou erro inesperado para id: ' . json_encode($case5));
         $this->assertEquals($expected, $case5['usertype_id'], 'case5 retornou erro inesperado para usertype_id: ' . json_encode($case5));
-        $this->assertEquals($expected, $case5['gender_id'], 'case5 retornou erro inesperado para gender_id: ' . json_encode($case5));
-        $this->assertEquals($expected, $case5['birth'], 'case5 não retornou erro inesperado para birth: ' . json_encode($case5));
         $this->assertEquals($expected, $case5['email'], 'case5 não retornou erro inesperado para email: ' . json_encode($case5));
         $this->assertEquals($expected, $case5['is_active'], 'case5 não retornou erro inesperado para is_active: ' . json_encode($case5));
-        $this->assertEquals($expected, $case5['phone1'], 'case5 não retornou erro inesperado para phone1: ' . json_encode($case5));
-        $this->assertEquals($expected, $case5['phone2'], 'case5 não retornou erro inesperado para phone2: ' . json_encode($case5));
+        
         //testando validação de tamanho da entrada
         $case6 = $this->Users->validator()->errors($cases[4]);
         $expected = ['maxLength' => 'The provided value is invalid'];
         $this->assertNotEmpty($case6, 'Caso 6 é invalido mas não retornou erro');
-        $this->assertEquals($expected, $case6['first_name'], 'case não retorna erro esperado para first_name: ' . json_encode($case6));
-        $this->assertEquals($expected, $case6['last_name'], 'case não retorna erro esperado para last_name: ' . json_encode($case6));
-        $this->assertEquals($expected, $case6['phone1'], 'case não retorna erro esperado para phone1: ' . json_encode($case6));
-        $this->assertEquals($expected, $case6['phone2'], 'case não retorna erro esperado para phone2: ' . json_encode($case6));
         $this->assertEquals($expected, $case6['email'], 'case não retorna erro esperado para email: ' . json_encode($case6));
-        //$this->markTestIncomplete('Not implemented yet.');
     }
 
     /**
@@ -229,36 +203,28 @@ class UsersTableTest extends TestCase
         $case2 = $this->Users->newEntity($cases[1]);
         $result = $this->Users->save($case2);
         $this->assertFalse($result, 'caso incvalido n retornou false');
+        
         $expected = ['_existsIn' => 'This value does not exist' ];
         $errors = $case2->errors();
         $this->assertEquals($expected, $errors['usertype_id'], 'não foi retornado erro para usertype invalido');
-        $this->assertEquals($expected, $errors['gender_id'], 'não foi retornado erro para gender invalido');
+        
         $expected = ['_isUnique' => 'This value is already in use'];
         $this->assertEquals($expected, $errors['email'], 'message');
-        //$this->markTestIncomplete('Not implemented yet.');
     }
 
     public function testPasswordValidate()
     {
-        $data = [
-            'new_password' => '123',
-            'confirm_password' => '123'
-        ];
         $user = $this->Users->get(1);
         $oldPassword = $user->password;
-
-        $teste = $this->Users->resetPassword($user, $data);
-        $this->assertTrue($teste, 'metodo deveria retornar true');
+        
+        $teste = $this->Users->resetPassword($user->passwordchangecode, $user->email, 'qwe123');
+        $this->assertTrue($teste, 'valid data returning false');
 
         $user = $this->Users->get(1);
         $newPassword = $user->password;
         $this->assertNotEquals($oldPassword, $newPassword, 'passwords deveriam ser diferentes');
 
-        $data = [
-            'new_password' => '123',
-            'confirm_password' => 'arroz'
-        ];
-        $teste = $this->Users->resetPassword($user, $data);
+        $teste = $this->Users->resetPassword($user->passwordchangecode, $user->email, 'qwe123');
         $this->assertFalse($teste, 'metodo deveria retornar false');
     }
 

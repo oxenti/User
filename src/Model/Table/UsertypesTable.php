@@ -6,6 +6,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use User\Model\Entity\Usertype;
+use User\Model\Table\AppTable;
 
 /**
  * Usertypes Model
@@ -13,7 +14,7 @@ use User\Model\Entity\Usertype;
  * @property \Cake\ORM\Association\BelongsTo $Userjuridicaltypes
  * @property \Cake\ORM\Association\HasMany $Users
  */
-class UsertypesTable extends Table
+class UsertypesTable extends AppTable
 {
 
     /**

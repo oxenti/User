@@ -1,13 +1,13 @@
 <?php
 namespace User\Test\Fixture;
 
-use Cake\TestSuite\Fixture\TestFixture;
+use User\Test\Fixture\AppFixture;
 
 /**
  * UsersocialdataFixture
  *
  */
-class UsersocialdataFixture extends TestFixture
+class UsersocialdataFixture extends AppFixture
 {
 
     /**

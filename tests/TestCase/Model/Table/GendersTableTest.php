@@ -52,7 +52,8 @@ class GendersTableTest extends TestCase
     public function testInitialize()
     {
         $this->assertNotEmpty($this->Genders);
-        $this->assertNotEmpty($this->Genders->Associations(), 'message');
+        $this->assertNotEmpty($this->Genders->Associations(), "No Associations found.");
+        $this->assertNotEmpty($this->Genders->Personalinformations, "Personalinformations Association not found.");
         $this->assertNotEmpty($this->Genders->Behaviors());
     }
 
@@ -78,7 +79,7 @@ class GendersTableTest extends TestCase
         $this->assertEmpty($gender->errors());
 
 //*************** Entradas NÃO validas **********************************
-        $teste = $this->Genders->newEntity();
+        $this->Genders->newEntity();
         $gender = $this->Genders->validator()->errors([
             'name' => '',
             'created' => '2015-09-15 14:45:05',
@@ -86,7 +87,7 @@ class GendersTableTest extends TestCase
             'is_active' => 1
         ]);
         $expected = ['_empty' => 'This field cannot be left empty'];
-        $this->assertEquals($expected, $gender['name'], 'Campo name vazio');//($gender->errors(), 'message');
+        $this->assertEquals($expected, $gender['name'], 'Not Empty Field validation not working for "name"');
 
         $gender = $this->Genders->validator()->errors([
             'created' => '2015-09-15 14:45:05',
@@ -94,6 +95,6 @@ class GendersTableTest extends TestCase
             'is_active' => 1
         ]);
         $expected = ['_required' => 'This field is required'];
-        $this->assertEquals($expected, $gender['name'], 'campo name inexistente');
+        $this->assertEquals($expected, $gender['name'], 'Required Field validation not working for "name"');
     }
 }
