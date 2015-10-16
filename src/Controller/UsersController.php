@@ -28,7 +28,7 @@ class UsersController extends AppController
     {
         parent::beforeFilter($event);
         if (isset($this->Auth)) {
-            $this->Auth->allow(['getToken', 'add', 'verify', 'resetPassword', 'linkedinHandler']);
+            $this->Auth->allow(['getToken', 'add', 'index', 'verify', 'resetPassword', 'linkedinHandler']);
         }
     }
 
@@ -159,7 +159,6 @@ class UsersController extends AppController
             ]);
         } else {
             throw new BadRequestException('The user could not be saved. ' . json_encode($user->errors()));
-            // throw new BadRequestException('The user could not be saved. ' . json_encode($user->errors(), JSON_PRETTY_PRINT));
         }
     }
 
@@ -172,9 +171,10 @@ class UsersController extends AppController
     public function edit($userId = null)
     {
         $this->request->allowMethod(['put']);
-        $user = $this->Users->get($userId);
+        $user = $this->Users->get($userId, ['contain' => ['Addresses', 'Personalinformations']]);
         if ($this->request->is('put')) {
-            $user = $this->Users->patchEntity($user, $this->request->data);
+            debug($user);
+            $user = $this->Users->patchEntity($user, $this->Users->formatRequestData($this->request->data));
             if ($this->Users->save($user)) {
                 $message = 'The user has been saved.';
                 $this->set([

@@ -12,6 +12,6 @@ class AppController extends BaseController
     public function initialize()
     {
         parent::initialize();
-        $this->loadComponent('User.Linkedin');
+        // $this->loadComponent('User.Linkedin');
     }
 }

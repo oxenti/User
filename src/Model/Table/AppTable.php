@@ -10,7 +10,7 @@ use SoftDelete\Model\Table\SoftDeleteTrait;
 class AppTable extends Table
 {
 
-    // use SoftDeleteTrait;
+    use SoftDeleteTrait;
 
     /**
      * Set the plugin's custom database connection

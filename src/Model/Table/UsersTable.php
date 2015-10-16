@@ -213,18 +213,18 @@ class UsersTable extends AppTable
 
         foreach ($fields as $field) {
             if (isset($data[$field])) {
-                $data['Personalinformation'][$field] = $data[$field];
+                $data['personalinformation'][$field] = $data[$field];
                 unset($data[$field]);
             }
 
             if (isset($data['User'][$field])) {
-                $data['Personalinformation'][$field] = $data['User'][$field];
+                $data['personalinformation'][$field] = $data['User'][$field];
                 unset($data['User'][$field]);
             }
         }
-
         return $data;
     }
+
     /**
      * Resets the password
      *
