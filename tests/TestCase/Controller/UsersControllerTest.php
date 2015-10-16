@@ -231,9 +231,11 @@ class UsersControllerTest extends IntegrationTestCase
     //         'email' => 'rootModificado@root.com',
     //         'password' => 'qwe123',
     //         'address' => [
-    //             'city_id' => 1,
-    //             'street' => 'Novo Endereco',
-    //             'neighborhood' => 'Novo bairro',
+    //             0 => [
+    //                 'city_id' => 1,
+    //                 'street' => 'Novo Endereco',
+    //                 'neighborhood' => 'Novo bairro',
+    //             ]
     //         ]
     //     ];
 
