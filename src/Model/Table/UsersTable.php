@@ -269,4 +269,30 @@ class UsersTable extends AppTable
         }
         return false;
     }
+
+    /**
+     * isUserResourceOwner method Checks if the user owns a Resource
+     * @param int $userId Id of the User
+     * @param int $resourceId Id of the Resourece
+     * @param string $resourceModelName Name of the resource's table class
+     * @param string $userFK Name of the foreign key of the User table on the Resource class
+     * @return bool
+     */
+    public function isUserResourceOwner($userId, $resourceId, $resourceModelName, $userFK = 'user_id')
+    {
+        if (($resourceModelName == '') || (! $resourceId) || (! $userId)) {
+            return false;
+        }
+
+        $resource = $this->$resourceModelName->get($resourceId);
+        if (! $resource) {
+            return false;
+        }
+
+        if ($resource[$userFK] != $userId) {
+            return false;
+        }
+
+        return true;
+    }
 }
