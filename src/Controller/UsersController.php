@@ -132,7 +132,7 @@ class UsersController extends AppController
         $this->request->allowMethod(['get']);
         $user = $this->Users->find()
             ->where(['Users.id' => $userId])
-            ->contain(['Usertypes', 'Personalinformations'])
+            ->contain(['Usertypes', 'Personalinformations', 'Personalinformations.Genders'])
             ->first();
         if (!$user) {
             throw new NotFoundException('The user could not be found. Please, try again.');
