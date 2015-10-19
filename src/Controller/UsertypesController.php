@@ -35,6 +35,7 @@ class UsertypesController extends AppController
            'finder' => $finder,
            'order' => ['Usertypes.name'],
         ];
+
         $this->set('usertypes', $this->paginate($this->Usertypes));
         $this->set('_serialize', ['usertypes']);
     }

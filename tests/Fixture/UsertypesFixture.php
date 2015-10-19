@@ -1,13 +1,13 @@
 <?php
 namespace User\Test\Fixture;
 
-use User\Test\Fixture\AppFixture;
+use Cake\TestSuite\Fixture\TestFixture;
 
 /**
  * UsertypesFixture
  *
  */
-class UsertypesFixture extends AppFixture
+class UsertypesFixture extends TestFixture
 {
 
     /**
@@ -18,8 +18,9 @@ class UsertypesFixture extends AppFixture
     // @codingStandardsIgnoreStart
     public $fields = [
         'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
-        'userjuridicaltype_id' => ['type' => 'integer', 'length' => 10, 'unsigned' => false, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'userjuridicaltype_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'name' => ['type' => 'string', 'length' => 45, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'fixed' => null],
+        'is_active' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '1', 'comment' => '', 'precision' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         '_indexes' => [
@@ -45,37 +46,10 @@ class UsertypesFixture extends AppFixture
         [
             'id' => 1,
             'userjuridicaltype_id' => 1,
-            'name' => 'Aluno',
-            'created' => '2015-09-15 14:22:14',
-            'modified' => '2015-09-15 14:22:14'
+            'name' => 'Lorem ipsum dolor sit amet',
+            'is_active' => 1,
+            'created' => '2015-10-19 16:08:17',
+            'modified' => '2015-10-19 16:08:17'
         ],
-        [
-            'id' => 2,
-            'userjuridicaltype_id' => 2,
-            'name' => 'Instituicao',
-            'created' => '2015-09-15 14:22:14',
-            'modified' => '2015-09-15 14:22:14'
-        ],
-        [
-            'id' => 3,
-            'userjuridicaltype_id' => 1,
-            'name' => 'Professor',
-            'created' => '2015-09-15 14:22:14',
-            'modified' => '2015-09-15 14:22:14'
-        ],
-        [
-            'id' => 4,
-            'userjuridicaltype_id' => 1,
-            'name' => 'Tutor',
-            'created' => '2015-09-15 14:22:14',
-            'modified' => '2015-09-15 14:22:14'
-        ],
-        [
-            'id' => 100,
-            'userjuridicaltype_id' => 2,
-            'name' => 'Administrador',
-            'created' => '2015-09-15 14:22:14',
-            'modified' => '2015-09-15 14:22:14'
-        ]
     ];
 }

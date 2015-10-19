@@ -6,6 +6,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use User\Model\Entity\Personalinformation;
+use User\Model\Table\AppTable;
 
 /**
  * Personalinformations Model
@@ -13,7 +14,7 @@ use User\Model\Entity\Personalinformation;
  * @property \Cake\ORM\Association\BelongsTo $Users
  * @property \Cake\ORM\Association\BelongsTo $Genders
  */
-class PersonalinformationsTable extends Table
+class PersonalinformationsTable extends AppTable
 {
 
     /**

@@ -25,6 +25,7 @@ class PersonalinformationsFixture extends AppFixture
         'gender_id' => ['type' => 'integer', 'length' => 11, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'phone1' => ['type' => 'string', 'length' => 13, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'fixed' => null],
         'phone2' => ['type' => 'string', 'length' => 13, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'fixed' => null],
+        'is_active' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => '1', 'comment' => 'Disable/enable account', 'precision' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         '_indexes' => [
@@ -56,6 +57,7 @@ class PersonalinformationsFixture extends AppFixture
             'gender_id' => 1,
             'phone1' => 'Lorem ipsum',
             'phone2' => 'Lorem ipsum',
+            'is_active' => 1,
             'created' => '2015-10-07 02:42:20',
             'modified' => '2015-10-07 02:42:20'
         ],

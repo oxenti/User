@@ -133,12 +133,10 @@ class UsersTable extends AppTable
     {
         $user = $this->newEntity($this->formatRequestData($data));
         if (! $this->save($user)) {
-            return false;
+            // if (! $this->Users->sendVerificationEmail($user)) {
+            //     return false;
+            // }
         }
-
-        // if (! $this->Users->sendVerificationEmail($user)) {
-        //     return false;
-        // }
 
         return $user;
     }

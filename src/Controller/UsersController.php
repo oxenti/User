@@ -28,7 +28,7 @@ class UsersController extends AppController
     {
         parent::beforeFilter($event);
         if (isset($this->Auth)) {
-            $this->Auth->allow(['getToken', 'add', 'index', 'verify', 'resetPassword', 'linkedinHandler']);
+            $this->Auth->allow(['getToken', 'add', 'index', 'edit', 'verify', 'resetPassword', 'linkedinHandler']);
         }
     }
 
@@ -150,7 +150,7 @@ class UsersController extends AppController
     {
         $this->request->allowMethod(['post']);
         $user = $this->Users->saveUser($this->request->data);
-        if ($user) {
+        if (empty($user->errors())) {
             $message = 'The user has been saved.';
             $this->set([
                 'success' => true,
@@ -170,21 +170,20 @@ class UsersController extends AppController
      */
     public function edit($userId = null)
     {
-        $this->request->allowMethod(['put']);
-        $user = $this->Users->get($userId, ['contain' => ['Addresses', 'Personalinformations']]);
-        if ($this->request->is('put')) {
-            debug($user);
-            $user = $this->Users->patchEntity($user, $this->Users->formatRequestData($this->request->data));
-            if ($this->Users->save($user)) {
-                $message = 'The user has been saved.';
-                $this->set([
-                    'success' => true,
-                    'message' => $message,
-                    '_serialize' => ['success', 'message']
-                ]);
-            } else {
-                throw new NotFoundException('Could not edit that user');
-            }
+        $this->request->allowMethod(['put', 'post']);
+
+        $contain = $this->Users->getRequestAssociations($this->request->data);
+        $user = $this->Users->get($userId, ['contain' => $contain]);
+        $user = $this->Users->patchEntity($user, $this->Users->formatRequestData($this->request->data));
+        if ($this->Users->save($user)) {
+            $message = 'The user has been saved.';
+            $this->set([
+                'success' => true,
+                'message' => $message,
+                '_serialize' => ['success', 'message']
+            ]);
+        } else {
+            throw new NotFoundException('Could not edit that user');
         }
     }
 
