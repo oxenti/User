@@ -8,7 +8,8 @@
         "admad/cakephp-jwt-auth": "1.0.x-dev",
         "oxenti/soft-delete": "dev-master",
         "oxenti/address": "dev-master",
-        "happyr/linkedin-api-client": "dev-master"
+        "happyr/linkedin-api-client": "dev-master",
+        "cakemanager/cakephp-utils": "dev-master" 
     },
     "require-dev": {
         "phpunit/phpunit": "*"

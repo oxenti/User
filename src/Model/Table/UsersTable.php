@@ -36,6 +36,14 @@ class UsersTable extends AppTable
         $this->primaryKey('id');
 
         $this->addBehavior('Timestamp');
+        $this->addBehavior('Utils.Uploadable', [
+            'avatar' => [
+                'field' => 'avatar_path',
+                'path' => '{ROOT}{DS}{WEBROOT}{DS}uploads{DS}{model}{DS}{field}{DS}{primaryKey}',
+                'fileName' => '{field}.{extension}'
+            ],
+          ]
+        );
 
         $this->belongsTo('Usertypes', [
             'foreignKey' => 'usertype_id',
@@ -213,18 +221,18 @@ class UsersTable extends AppTable
 
         foreach ($fields as $field) {
             if (isset($data[$field])) {
-                $data['Personalinformation'][$field] = $data[$field];
+                $data['personalinformation'][$field] = $data[$field];
                 unset($data[$field]);
             }
 
             if (isset($data['User'][$field])) {
-                $data['Personalinformation'][$field] = $data['User'][$field];
+                $data['personalinformation'][$field] = $data['User'][$field];
                 unset($data['User'][$field]);
             }
         }
-
         return $data;
     }
+
     /**
      * Resets the password
      *
@@ -268,5 +276,31 @@ class UsersTable extends AppTable
             return $user;
         }
         return false;
+    }
+
+    /**
+     * isUserResourceOwner method Checks if the user owns a Resource
+     * @param int $userId Id of the User
+     * @param int $resourceId Id of the Resourece
+     * @param string $resourceModelName Name of the resource's table class
+     * @param string $userFK Name of the foreign key of the User table on the Resource class
+     * @return bool
+     */
+    public function isUserResourceOwner($userId, $resourceId, $resourceModelName, $userFK = 'user_id')
+    {
+        if (($resourceModelName == '') || (! $resourceId) || (! $userId)) {
+            return false;
+        }
+
+        $resource = $this->$resourceModelName->get($resourceId);
+        if (! $resource) {
+            return false;
+        }
+
+        if ($resource[$userFK] != $userId) {
+            return false;
+        }
+
+        return true;
     }
 }
