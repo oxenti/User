@@ -36,6 +36,14 @@ class UsersTable extends AppTable
         $this->primaryKey('id');
 
         $this->addBehavior('Timestamp');
+        $this->addBehavior('Utils.Uploadable', [
+            'avatar' => [
+                'field' => 'avatar_path',
+                'path' => '{ROOT}{DS}{WEBROOT}{DS}uploads{DS}{model}{DS}{field}{DS}{primaryKey}',
+                'fileName' => '{field}.{extension}'
+            ],
+          ]
+        );
 
         $this->belongsTo('Usertypes', [
             'foreignKey' => 'usertype_id',
