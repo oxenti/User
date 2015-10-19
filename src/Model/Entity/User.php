@@ -39,9 +39,9 @@ class User extends Entity
         'id' => false,
     ];
 
-    protected $_virtual = ['full_name'];
+    // protected $_virtual = ['full_name'];
 
-    protected $_hidden = ['password', 'login', 'emailcheckcode', 'passwordchangecode', 'expire_account', 'created', 'is_active', 'modified'];
+    protected $_hidden = ['password', 'login', 'emailcheckcode', 'passwordchangecode', 'expire_account', 'token', 'created', 'is_active', 'modified'];
 
     /**
      * Set Hashed password, before save
@@ -55,10 +55,10 @@ class User extends Entity
     /**
      * virtual field full name
      */
-    protected function _getFullName()
-    {
-        return '';
-        // return $this->_properties['personalinformation']['first_name'] . ' ' .
-        //     $this->_properties['personalinformation']['last_name'];
-    }
+    // protected function _getFullName()
+    // {
+    //     return '';
+    //     // return $this->_properties['personalinformation']['first_name'] . ' ' .
+    //     //     $this->_properties['personalinformation']['last_name'];
+    // }
 }
