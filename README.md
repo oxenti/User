@@ -85,6 +85,7 @@ In your app's 'AppController.php' set up the Auth componet:
                 ],
             ]
         ],
+        'storage' => 'Memory',
         'unauthorizedRedirect' => false
     ]);
     ...
