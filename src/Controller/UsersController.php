@@ -28,7 +28,7 @@ class UsersController extends AppController
     {
         parent::beforeFilter($event);
         if (isset($this->Auth)) {
-            $this->Auth->allow(['getToken', 'add', 'index', 'verify', 'resetPassword', 'linkedinHandler']);
+            $this->Auth->allow(['getToken', 'add', 'verify', 'resetPassword', 'linkedinHandler']);
         }
     }
 
@@ -173,7 +173,6 @@ class UsersController extends AppController
         $this->request->allowMethod(['put']);
         $user = $this->Users->get($userId, ['contain' => ['Addresses', 'Personalinformations']]);
         if ($this->request->is('put')) {
-            debug($user);
             $user = $this->Users->patchEntity($user, $this->Users->formatRequestData($this->request->data));
             if ($this->Users->save($user)) {
                 $message = 'The user has been saved.';
