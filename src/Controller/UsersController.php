@@ -139,10 +139,11 @@ class UsersController extends AppController
         
         $contain = ['Usertypes', 'Personalinformations', 'Personalinformations.Genders'];
 
-        $associations = !isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
+        $associations = isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
         foreach ($associations as $key) {
             $contain[] = $key;
         }
+        $contain = $this->Users->getValidAssociations($contain);
 
         $user = $this->Users->find()
             ->where(['Users.id' => $userId])
@@ -189,7 +190,7 @@ class UsersController extends AppController
 
         $contain = $this->Users->getRequestAssociations($this->request->data);
         $queryAssociations = isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
-        $contain = array_merge($contain, $queryAssociations);
+        $contain = $this->Users->getValidAssociations(array_merge($contain, $queryAssociations));
 
         $user = $this->Users->get($userId, ['contain' => $contain]);
         // debug($user);
