@@ -1,6 +1,7 @@
 <?php
 namespace User\Model\Table;
 
+use App\Model\Table\AppTable as BaseAppTable;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use SoftDelete\Model\Table\SoftDeleteTrait;
@@ -8,7 +9,7 @@ use SoftDelete\Model\Table\SoftDeleteTrait;
 /**
  * App Table class
  */
-class AppTable extends Table
+class AppTable extends BaseAppTable
 {
 
     use SoftDeleteTrait;

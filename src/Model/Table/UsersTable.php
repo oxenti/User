@@ -132,7 +132,7 @@ class UsersTable extends AppTable
     public function saveUser(Array $data)
     {
         $user = $this->newEntity($this->formatRequestData($data));
-        if (! $this->save($user)) {
+        if ($this->save($user)) {
             // if (! $this->Users->sendVerificationEmail($user)) {
             //     return false;
             // }

@@ -108,13 +108,19 @@ class UsersController extends AppController
      */
     public function index()
     {
-        $finder = !isset($this->request->query['finder'])?'All': $this->request->query['finder'];
+        $finder = !isset($this->request->query['finder']) ? 'All': $this->request->query['finder'];
+
         $this->paginate = [
             'finder' => $finder,
             'contain' => ['Usertypes', 'Personalinformations'],
             'order' => ['Users.email'],
         ];
         
+        $contain = !isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
+        foreach ($contain as $key) {
+            $this->paginate['contain'][] = $key;
+        }
+
         $users = $this->paginate($this->Users);
         $this->set(compact('users'));
         $this->set('_serialize', ['users']);
@@ -130,10 +136,19 @@ class UsersController extends AppController
     public function view($userId = null)
     {
         $this->request->allowMethod(['get']);
+        
+        $contain = ['Usertypes', 'Personalinformations', 'Personalinformations.Genders'];
+
+        $associations = !isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
+        foreach ($associations as $key) {
+            $contain[] = $key;
+        }
+
         $user = $this->Users->find()
             ->where(['Users.id' => $userId])
-            ->contain(['Usertypes', 'Personalinformations', 'Personalinformations.Genders'])
+            ->contain($contain)
             ->first();
+
         if (!$user) {
             throw new NotFoundException('The user could not be found. Please, try again.');
         }
@@ -173,7 +188,12 @@ class UsersController extends AppController
         $this->request->allowMethod(['put', 'post']);
 
         $contain = $this->Users->getRequestAssociations($this->request->data);
+        $queryAssociations = isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
+        $contain = array_merge($contain, $queryAssociations);
+
         $user = $this->Users->get($userId, ['contain' => $contain]);
+        // debug($user);
+        // die();
         $user = $this->Users->patchEntity($user, $this->Users->formatRequestData($this->request->data));
         if ($this->Users->save($user)) {
             $message = 'The user has been saved.';
