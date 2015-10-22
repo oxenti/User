@@ -31,8 +31,6 @@ class AppTable extends BaseAppTable
     {
         foreach ($config as $relationType => $relations) {
             if (! empty($relations)) {
-                // $setupMethod = '_set' . $relationType;
-                // $this->$setupMethod($relations);
                 foreach ($relations as $name => $data) {
                     $this->$relationType($name, $data);
                 }
@@ -55,55 +53,5 @@ class AppTable extends BaseAppTable
             }
         }
         return $rules;
-    }
-
-    /**
-     * getRequestAssociations method Extracts from the data array the relations with the User Model
-     * @param array $requestData Request Data
-     * @return array
-     */
-    public function getRequestAssociations(array $requestData)
-    {
-        $requestAssoc = [];
-        foreach ($requestData as $key => $info) {
-            $requestAssoc = array_merge(
-                $requestAssoc,
-                $this->_checkAssocitation($info, $key, $this)
-            );
-        }
-        return $requestAssoc;
-    }
-
-    /**
-     * _checkAssociation method
-     * @param array $data Candidate relation's data
-     * @param string $candidate Candidate key
-     * @param array $table Associated table
-     * @param string $parentAssociation Name of the parent association
-     * @return array
-     */
-    protected function _checkAssocitation($data, $candidate, $table, $parentAssociation = '')
-    {
-        if (! is_array($data)) {
-            return [];
-        }
-
-        $associations = [];
-        $pluralSec = Inflector::pluralize($candidate);
-
-        if ($table->association($pluralSec)) {
-            $association = ucwords($pluralSec);
-            $assocString = ($parentAssociation != '') ? $parentAssociation . '.' . $association : $association;
-            $associations[] = $assocString;
-
-            foreach ($data as $key => $info) {
-                $associations = array_merge(
-                    $associations,
-                    $this->_checkAssocitation($info, $key, $table->$association, $assocString)
-                );
-            }
-        }
-
-        return $associations;
     }
 }
