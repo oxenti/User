@@ -251,7 +251,7 @@ class UsersTable extends AppTable
      */
     public function getUserType($tableName)
     {
-        return Configure::read('usertypes.' . $tableName);
+        return Configure::read('user_plugin.usertypes.' . $tableName);
     }
 
     /**
