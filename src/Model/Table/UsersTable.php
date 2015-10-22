@@ -20,7 +20,6 @@ use User\Model\Table\AppTable;
  */
 class UsersTable extends AppTable
 {
-
     /**
      * Initialize method
      *
@@ -215,11 +214,11 @@ class UsersTable extends AppTable
      * @param array $data  Request Data
      * @return array  Formated data
      */
-    public function formatRequestData(Array $data)
+    public function formatRequestData(array $data)
     {
-        $fields = ['gender_id', 'first_name', 'last_name', 'birth', 'phone1', 'phone2'];
+        $personalFields = ['gender_id', 'first_name', 'last_name', 'birth', 'phone1', 'phone2'];
 
-        foreach ($fields as $field) {
+        foreach ($personalFields as $field) {
             if (isset($data[$field])) {
                 $data['personalinformation'][$field] = $data[$field];
                 unset($data[$field]);
@@ -231,6 +230,28 @@ class UsersTable extends AppTable
             }
         }
         return $data;
+    }
+
+    /**
+     * setUsertype method
+     * @param array $data User data
+     * @param string $tableName Table class name
+     * @return array
+     */
+    public function setUsertype(array $data, $tableName)
+    {
+        $data['usertype_id'] = $this->getUserType($tableName);
+        return $data;
+    }
+
+    /**
+     * getUsertype method
+     * @param string $tableName Table class name
+     * @return string|false
+     */
+    public function getUserType($tableName)
+    {
+        return Configure::read('usertypes.' . $tableName);
     }
 
     /**
