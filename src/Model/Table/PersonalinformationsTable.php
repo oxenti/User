@@ -33,7 +33,7 @@ class PersonalinformationsTable extends AppTable
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Users', [
+        $this->hasOne('Users', [
             'foreignKey' => 'user_id',
             'joinType' => 'INNER',
             'className' => 'User.Users'
@@ -57,9 +57,9 @@ class PersonalinformationsTable extends AppTable
             ->add('id', 'valid', ['rule' => 'numeric'])
             ->allowEmpty('id', 'create');
 
-        $validator
-            ->add('user_id', 'valid', ['rule' => 'numeric'])
-            ->allowEmpty('user_id');
+        // $validator
+        //     ->add('user_id', 'valid', ['rule' => 'numeric'])
+        //     ->allowEmpty('user_id');
 
         $validator
             ->requirePresence('gender_id', 'create')
@@ -98,8 +98,8 @@ class PersonalinformationsTable extends AppTable
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['user_id']));
-        $rules->add($rules->existsIn(['user_id'], 'Users'));
+        // $rules->add($rules->isUnique(['user_id']));
+        // $rules->add($rules->existsIn(['user_id'], 'Users'));
         $rules->add($rules->existsIn(['gender_id'], 'Genders'));
         return $rules;
     }

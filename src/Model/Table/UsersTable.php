@@ -52,8 +52,8 @@ class UsersTable extends AppTable
             'className' => 'User.Usertypes'
         ]);
 
-        $this->hasOne('Personalinformations', [
-            'foreignKey' => 'user_id',
+        $this->belongsTo('Personalinformations', [
+            'foreignKey' => 'personalinformation_id',
             'className' => 'User.Personalinformations'
         ]);
 
@@ -76,6 +76,9 @@ class UsersTable extends AppTable
         $validator
             ->add('id', 'valid', ['rule' => 'numeric'])
             ->allowEmpty('id', 'create');
+        $validator
+            ->add('personalinformation_id', 'valid', ['rule' => 'numeric'])
+            ->notEmpty('personalinformation_id');
 
         $validator
             ->allowEmpty('avatar_path');
@@ -214,7 +217,7 @@ class UsersTable extends AppTable
      * @param array $data  Request Data
      * @return array  Formated data
      */
-    public function formatRequestData(array $data)
+    public function formatRequestData(array $data, $entity = null)
     {
         $personalFields = ['gender_id', 'first_name', 'last_name', 'birth', 'phone1', 'phone2'];
 
@@ -229,7 +232,35 @@ class UsersTable extends AppTable
                 unset($data['User'][$field]);
             }
         }
-        return $data;
+        return $entity ? $this->setEntityUserIds($data, $entity) : $data;
+    }
+
+    /**
+     * setEntityUserIds method
+     * @param array $userData User data array
+     * @param Entity $entity Business entity
+     * @return array
+     */
+    protected function setEntityUserIds(array $userData, $entity)
+    {
+        if (isset($entity->user->id)) {
+            $userData['id'] = $entity->user->id;
+        }
+
+        if (isset($entity->user->personalinformation_id)) {
+            $userData['personalinformation']['id'] = $entity->user->personalinformation_id;
+        }
+
+        if (isset($entity->user->addresses)) {
+            foreach ($entity->user->addresses as $address) {
+                if ($address->is_active) {
+                    $userData['addresses'][0]['id'] = $address->id;
+                    break;
+                }
+            }
+        }
+
+        return $userData;
     }
 
     /**
