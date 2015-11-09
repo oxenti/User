@@ -41,7 +41,6 @@ class UsersController extends AppController
     public function isAuthorized($user)
     {
         // Admin can access every action
-        parent::isAuthorized($user);
         if (isset($user['usertype_id'])) {
             if (isset($this->request->params['pass'][0])) {
                 if ($this->request->params['pass'][0] == $user['id']) {
@@ -51,6 +50,7 @@ class UsersController extends AppController
             return true;
         }
         // Default deny
+        parent::isAuthorized($user);
         throw new UnauthorizedException('UnauthorizedException ');
         return false;
     }
