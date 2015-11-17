@@ -33,6 +33,7 @@ class UsertypesController extends AppController
         $finder = !isset($this->request->query['finder'])?'All': $this->request->query['finder'];
         $this->paginate = [
            'finder' => $finder,
+           'conditions' => ['id <>' => 100],
            'order' => ['Usertypes.name'],
         ];
         $this->set('usertypes', $this->paginate($this->Usertypes));
