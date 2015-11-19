@@ -3,6 +3,7 @@ namespace User\Model\Table;
 
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Core\Configure;
+use Cake\I18n\Time;
 use Cake\Network\Email\Email;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -129,17 +130,16 @@ class UsersTable extends AppTable
         }
     }
 
+    
     public function saveUser(Array $data)
     {
         $user = $this->newEntity($this->formatRequestData($data));
         if (! $this->save($user)) {
             return false;
         }
-
-        // if (! $this->Users->sendVerificationEmail($user)) {
-        //     return false;
-        // }
-
+        if (! $this->sendVerificationEmail($user)) {
+            return false;
+        }
         return $user;
     }
 
@@ -174,10 +174,12 @@ class UsersTable extends AppTable
             ->viewVars(['code' => $code])
             ->to($user->email)
             ->subject('Your System registration');
-
         if ($email->send()) {
             return true;
         }
+
+        debug($email);
+        die();
         return false;
     }
 
@@ -220,6 +222,9 @@ class UsersTable extends AppTable
     public function formatRequestData(Array $data)
     {
         $fields = ['gender_id', 'first_name', 'last_name', 'birth', 'phone1', 'phone2'];
+        if (isset($data['birth'])) {
+            $data['birth'] = new Time($data['birth']);
+        }
 
         foreach ($fields as $field) {
             if (isset($data[$field])) {

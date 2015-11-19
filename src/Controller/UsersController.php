@@ -27,7 +27,7 @@ class UsersController extends AppController
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        if (isset($this->Auth)) {
+        if (isset($this->Auth) && !isset(getallheaders()['Authorization'])) {
             $this->Auth->allow(['getToken', 'add', 'verify', 'resetPassword', 'linkedinHandler']);
         }
     }
@@ -42,15 +42,20 @@ class UsersController extends AppController
     {
         // Admin can access every action
         if (isset($user['usertype_id'])) {
-            if (isset($this->request->params['pass'][0])) {
+            if ($user['usertype_id'] == 100) {
+                return true;
+            } elseif (isset($this->request->params['pass'][0])) {
                 if ($this->request->params['pass'][0] == $user['id']) {
                     return true;
+                } else {
+                    return false;
                 }
+            } else {
+                return false;
             }
-            return true;
         }
-        // Default deny
         parent::isAuthorized($user);
+        // Default deny
         throw new UnauthorizedException('UnauthorizedException ');
         return false;
     }
@@ -73,6 +78,8 @@ class UsersController extends AppController
         $user = $this->Auth->identify([], 012);
         if (! $user) {
             throw new UnauthorizedException('Invalid username or password');
+        } elseif (!empty($user['emailcheckcode'])) {
+            throw new UnauthorizedException('Before login, please confirm email');
         }
         $this->set([
             'success' => true,
@@ -132,7 +139,7 @@ class UsersController extends AppController
         $this->request->allowMethod(['get']);
         $user = $this->Users->find()
             ->where(['Users.id' => $userId])
-            ->contain(['Usertypes', 'Personalinformations', 'Personalinformations.Genders'])
+            ->contain(['Usertypes', 'Personalinformations', 'Personalinformations.Genders', 'Addresses'])
             ->first();
         if (!$user) {
             throw new NotFoundException('The user could not be found. Please, try again.');
@@ -158,7 +165,7 @@ class UsersController extends AppController
                 '_serialize' => ['success', 'message']
             ]);
         } else {
-            throw new BadRequestException('The user could not be saved. ' . json_encode($user->errors()));
+            throw new BadRequestException('The user could not be saved.');
         }
     }
 
@@ -199,11 +206,15 @@ class UsersController extends AppController
         $this->request->allowMethod('delete');
         $user = $this->Users->get($userId);
         if ($this->Users->delete($user)) {
-            $this->Flash->success(__('The user has been deleted.'));
+            $message = 'The user has been disable.';
+            $this->set([
+                'success' => true,
+                'message' => $message,
+                '_serialize' => ['success', 'message']
+            ]);
         } else {
-            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
+            throw new BadRequestException('The user could not be disable.');
         }
-        return $this->redirect(['action' => 'index']);
     }
 
     /**
