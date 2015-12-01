@@ -133,11 +133,13 @@ class UsersTable extends AppTable
     
     public function saveUser(Array $data)
     {
+        $url = $data['urlVerify'];
+        unset($data['urlVerify']);
         $user = $this->newEntity($this->formatRequestData($data));
         if (! $this->save($user)) {
             return false;
         }
-        if (! $this->sendVerificationEmail($user)) {
+        if (! $this->sendVerificationEmail($user, $url)) {
             return false;
         }
         return $user;
@@ -163,23 +165,19 @@ class UsersTable extends AppTable
      * @param User $user the User info.
      * @return bool
      */
-    public function sendVerificationEmail($user)
+    public function sendVerificationEmail($user, $url)
     {
         $email = new Email('default');
         $code = $user->emailcheckcode;
-
         $email->from(['me@example.com' => 'Your System'])
             ->emailFormat('html')
             ->template('register', 'default')
-            ->viewVars(['code' => $code])
+            ->viewVars(['code' => $code, 'url' => $url])
             ->to($user->email)
             ->subject('Your System registration');
         if ($email->send()) {
             return true;
         }
-
-        debug($email);
-        die();
         return false;
     }
 

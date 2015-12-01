@@ -364,11 +364,12 @@ class UsersController extends AppController
     public function sendVerificationEmail()
     {
         $user = $this->Users->get($this->Auth->user('id'));
+        $url = $this->request->data['urlVerify'];
         if (empty($user->emailcheckcode)) {
             throw new UnauthorizedException('Email already confirmed');
         } else {
             $user->emailcheckcode = md5(time() * rand());
-            if ($this->Users->sendVerificationEmail($user)) {//mudar nome
+            if ($this->Users->sendVerificationEmail($user, $url)) {//mudar nome
                 $this->Users->save($user);
                 $message = __('The email was resent. Please check your inbox.');
                 $success = true;
