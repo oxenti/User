@@ -75,7 +75,7 @@ class UsersController extends AppController
      */
     public function getToken()
     {
-        $user = $this->Auth->identify([], 012);
+        $user = $this->Auth->identify();
         if (! $user) {
             throw new UnauthorizedException('Invalid username or password');
         } elseif (!empty($user['emailcheckcode'])) {
