@@ -28,7 +28,7 @@ class UsersController extends AppController
     {
         parent::beforeFilter($event);
         if (isset($this->Auth)) {
-            $this->Auth->allow(['getToken', 'add', 'index', 'edit', 'verify', 'resetPassword', 'linkedinHandler']);
+            $this->Auth->allow(['getToken', 'add', 'verify', 'resetPassword', 'linkedinHandler', 'sendVerificationEmail']);
         }
     }
 
@@ -40,19 +40,11 @@ class UsersController extends AppController
      */
     public function isAuthorized($user)
     {
-        // Admin can access every action
-        parent::isAuthorized($user);
-        if (isset($user['usertype_id'])) {
-            if (isset($this->request->params['pass'][0])) {
-                if ($this->request->params['pass'][0] == $user['id']) {
-                    return true;
-                }
-            }
-            return true;
+        if (isset($this->request->params['pass'][0])) {
+            return ($this->request->params['pass'][0] == $user['id']);
         }
         // Default deny
-        throw new UnauthorizedException('UnauthorizedException ');
-        return false;
+        parent::isAuthorized($user);
     }
 
     /**
@@ -116,7 +108,7 @@ class UsersController extends AppController
             'order' => ['Users.email'],
         ];
         
-        $contain = !isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
+        $contain = isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
         foreach ($contain as $key) {
             $this->paginate['contain'][] = $key;
         }

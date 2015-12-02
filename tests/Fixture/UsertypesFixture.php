@@ -51,5 +51,13 @@ class UsertypesFixture extends TestFixture
             'created' => '2015-10-19 16:08:17',
             'modified' => '2015-10-19 16:08:17'
         ],
+        [
+            'id' => 2,
+            'userjuridicaltype_id' => 1,
+            'name' => 'Lorem ipsum dolor sit amet',
+            'is_active' => 1,
+            'created' => '2015-10-19 16:08:17',
+            'modified' => '2015-10-19 16:08:17'
+        ],
     ];
 }

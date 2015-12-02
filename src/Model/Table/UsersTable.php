@@ -276,7 +276,7 @@ class UsersTable extends AppTable
     }
 
     /**
-     * getUsertype method
+     * getUsertype method Returns the user type id for a table class
      * @param string $tableName Table class name
      * @return string|false
      */
@@ -348,7 +348,7 @@ class UsersTable extends AppTable
         if (! $resource) {
             return false;
         }
-
+        
         if ($resource[$userFK] != $userId) {
             return false;
         }

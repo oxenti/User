@@ -1,25 +1,8 @@
 <?php
-namespace oxenti\User\Model\Entity;
+namespace User\Model\Entity;
 
 use Cake\ORM\Entity;
 
-/**
- * Personalinformation Entity.
- *
- * @property int $id
- * @property int $user_id
- * @property \oxenti\User\Model\Entity\User $user
- * @property int $gender_id
- * @property \oxenti\User\Model\Entity\Gender $gender
- * @property string $first_name
- * @property string $last_name
- * @property \Cake\I18n\Time $birth
- * @property string $phone1
- * @property string $phone2
- * @property bool $is_active
- * @property \Cake\I18n\Time $created
- * @property \Cake\I18n\Time $modified
- */
 class Personalinformation extends Entity
 {
 
@@ -45,7 +28,7 @@ class Personalinformation extends Entity
      */
     protected function _getFullName()
     {
-        return $this->_properties['personalinformation']['first_name'] . ' ' .
-            $this->_properties['personalinformation']['last_name'];
+        return $this->_properties['first_name'] . ' ' .
+            $this->_properties['last_name'];
     }
 }
