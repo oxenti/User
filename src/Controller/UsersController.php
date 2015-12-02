@@ -50,6 +50,8 @@ class UsersController extends AppController
                 } else {
                     return false;
                 }
+            } elseif ($this->request->action === 'info') {
+                return true;
             } else {
                 return false;
             }
@@ -420,5 +422,11 @@ class UsersController extends AppController
         } else {
             throw new NotFoundException('The user could not be saved. Please, try again.');
         }
+    }
+
+    public function info()
+    {
+        $this->set('user', $this->Auth->user());
+        $this->set('_serialize', ['user']);
     }
 }
