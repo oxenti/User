@@ -1,5 +1,5 @@
 <?php
-namespace oxenti\User\Model\Entity;
+namespace User\Model\Entity;
 
 use Cake\ORM\Entity;
 
@@ -45,7 +45,7 @@ class Personalinformation extends Entity
      */
     protected function _getFullName()
     {
-        return $this->_properties['personalinformation']['first_name'] . ' ' .
-            $this->_properties['personalinformation']['last_name'];
+        return $this->_properties['first_name'] . ' ' .
+            $this->_properties['last_name'];
     }
 }

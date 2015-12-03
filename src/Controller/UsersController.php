@@ -426,7 +426,22 @@ class UsersController extends AppController
 
     public function info()
     {
-        $this->set('user', $this->Auth->user());
+        $user = $this->Auth->user();
+        unset($user['emailcheckcode']);
+        unset($user['passwordchangecode']);
+        unset($user['is_active']);
+        unset($user['expire_account']);
+        unset($user['created']);
+        unset($user['modified']);
+
+        $personalInfo = $this->Users->Personalinformations->find()
+            ->select(['first_name', 'last_name'])
+            ->where(['user_id' => $user['id']])
+            ->first();
+        $user['first_name'] = $personalInfo['first_name'];
+        $user['last_name'] = $personalInfo['last_name'];
+
+        $this->set('user', $user);
         $this->set('_serialize', ['user']);
     }
 }
