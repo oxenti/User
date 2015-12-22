@@ -394,36 +394,51 @@ class UsersController extends AppController
      */
     public function linkedinHandler()
     {
-        $this->autoRender = false;
         $this->request->allowMethod(['post']);
-        if ($this->request->data) {
-            $token = $this->request->data['usersocialdata']['linkedin_token'];
-            $linkedinData = $this->Linkedin->linkedinget('/v1/people/~:(id)', $token);
-            $usersocialdata = $this->Users->Usersocialdata->find()->where(['linkedin_id' => $linkedinData['id']])->contain('Users')->first();
-            if ($usersocialdata) {//login action
-                $token = $this->_makeToken($usersocialdata['user']['id']);
+        // $token = $this->request->data['usersocialdata']['linkedin_token'];
+        // $linkedinData = $this->Linkedin->linkedinget('/v1/people/~:(id)', $token);
+        // debug($linkedinData);
+        // die();
+        $usersocialdata = $this->Users->Usersocialdata->find()
+            ->where(['linkedin_id' => $this->request->data['usersocialdata']['linkedin_id']])
+            ->contain('Users')->first();
+        if ($usersocialdata) {//login action
+            $token = $this->_makeToken($usersocialdata['user']['id']);
+            $success = true;
+        } else {
+            $user = $this->Users->newEntity($this->request->data);
+            if ($this->Users->save($user)) {
+                $token = $this->_makeToken($user->id);
                 $success = true;
             } else {
-                $user = $this->Users->newEntity($this->request->data);
-                if ($this->Users->save($user)) {
-                    $token = $this->_makeToken($user->id);
-                    $success = true;
-                } else {
-                    throw new NotFoundException('The user could not be saved. Please, try again.');
-                }
+                throw new NotFoundException('The user could not be saved. Please, try again.');
             }
-            $this->set([
-            'success' => $success,
-                'data' => [
-                    'token' => $token
-                ],
-                '_serialize' => ['success', 'data']
-            ]);
-        } else {
-            throw new NotFoundException('The user could not be saved. Please, try again.');
         }
+        $this->set([
+        'success' => $success,
+            'data' => [
+                'token' => $token
+            ],
+            '_serialize' => ['success', 'data']
+        ]);
     }
 
+    public function verifyLinkedin($linkedinId)
+    {
+        $usersocialdata = $this->Users->Usersocialdata->find()
+            ->where(['linkedin_id' => $linkedinId])
+            ->contain('Users')->first();
+        
+        $success = true;
+        if (!$usersocialdata) {
+            $success = false;
+        }
+
+        $this->set([
+        'success' => $success,
+            '_serialize' => ['success']
+        ]);
+    }
     public function info()
     {
         $user = $this->Auth->user();
