@@ -135,9 +135,10 @@ class UsersTable extends AppTable
     {
         $user = $this->newEntity($this->formatRequestData($data));
         if ($this->save($user)) {
-            // if (! $this->Users->sendVerificationEmail($user)) {
-            //     return false;
-            // }
+            if (! $this->sendVerificationEmail($user)) {
+                $this->delete($user);
+                return false;
+            }
         }
 
         return $user;
@@ -165,15 +166,15 @@ class UsersTable extends AppTable
      */
     public function sendVerificationEmail($user)
     {
-        $email = new Email('default');
+        $email = new Email('gmail');
         $code = $user->emailcheckcode;
 
-        $email->from(['me@example.com' => 'Your System'])
+        $email->from(['oxentisolutions@gmail.com' => 'AcheSeuEstudio'])
             ->emailFormat('html')
             ->template('register', 'default')
             ->viewVars(['code' => $code])
             ->to($user->email)
-            ->subject('Your System registration');
+            ->subject('Bem vindo ao AcheSeuEstúdio!!!');
 
         if ($email->send()) {
             return true;

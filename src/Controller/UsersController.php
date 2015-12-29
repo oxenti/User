@@ -69,6 +69,7 @@ class UsersController extends AppController
         $this->set([
             'success' => true,
             'data' => [
+                'id' => $user['id'],
                 'token' => $this->_makeToken($user['id'])
             ],
             '_serialize' => ['success', 'data']
@@ -157,6 +158,8 @@ class UsersController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post']);
+        // echo json_encode($this->request->data);
+        // die();
         $user = $this->Users->saveUser($this->request->data);
         if (empty($user->errors())) {
             $message = 'The user has been saved.';
@@ -166,7 +169,7 @@ class UsersController extends AppController
                 '_serialize' => ['success', 'message']
             ]);
         } else {
-            throw new BadRequestException('The user could not be saved. ' . json_encode($user->errors()));
+            throw new BadRequestException(json_encode($user->errors()));
         }
     }
 

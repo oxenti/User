@@ -74,7 +74,7 @@ class PersonalinformationsTable extends AppTable
             ->notEmpty('last_name');
 
         $validator
-            ->add('birth', 'valid', ['rule' => 'date', 'dmy'])
+            ->add('birth', 'valid', ['rule' => ['date', 'dmy']])
             ->requirePresence('birth', 'create')
             ->notEmpty('birth');
 
