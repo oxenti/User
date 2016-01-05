@@ -1,5 +1,5 @@
 <?php
-namespace App\Model\Behavior;
+namespace User\Model\Behavior;
 
 use Cake\ORM\Behavior;
 use Cake\ORM\Table;
