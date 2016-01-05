@@ -1,65 +1,39 @@
 <?php
-namespace User\Model\Table;
+namespace App\Model\Behavior;
 
+use Cake\ORM\Behavior;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
-use SoftDelete\Model\Table\SoftDeleteTrait;
 
 /**
- * App Table class
+ * Associatable behavior
  */
-class AppTable extends Table
+class AssociatableBehavior extends Behavior
 {
 
-    use SoftDeleteTrait;
-
-    public function initialize(array $config)
-    {
-        parent::initialize($config);
-        
-        $this->addBehavior('Associatable');
-    }
     /**
-     * Set the plugin's custom database connection
+     * Default configuration.
      *
+     * @var array
      */
-    public static function defaultConnectionName()
-    {
-        return 'oxenti_user';
-    }
+    protected $_defaultConfig = [];
 
-    /**
-     * _setAppRelations method  sets the all the relations outside the plugin
-     * @param array $config Array with the relation data
-     */
-    protected function _setAppRelations($config)
+    public function getValidAssociations(array $associations)
     {
-        foreach ($config as $relationType => $relations) {
-            if (! empty($relations)) {
-                // $setupMethod = '_set' . $relationType;
-                // $this->$setupMethod($relations);
-                foreach ($relations as $name => $data) {
-                    $this->$relationType($name, $data);
+        foreach ($associations as $key => $assoc) {
+            $association = explode('.', $assoc);
+            $model = $this->_table;
+            foreach ($association as $table) {
+                if (! $model->association($table)) {
+                    unset($associations[$key]);
+                    break;
                 }
-            }
-        }
-    }
 
-    /**
-     * _setExtraBuildRules method  sets the all the rules to relations outside the plugin
-     * @param RulesChecker $rules Table rules
-     * @param array $config Array with the relation data
-     */
-    protected function _setExtraBuildRules($rules, $config)
-    {
-        foreach ($config as $ruleName => $data) {
-            if (isset($data['tableName'])) {
-                $rules->add($rules->$ruleName($data['keys'], $data['tableName']));
-            } else {
-                $rules->add($rules->$ruleName($data['keys'], $data['tableName']));
+                $model = $model->$table;
             }
         }
-        return $rules;
+
+        return $associations;
     }
 
     /**
@@ -73,7 +47,7 @@ class AppTable extends Table
         foreach ($requestData as $key => $info) {
             $requestAssoc = array_merge(
                 $requestAssoc,
-                $this->_checkAssocitation($info, $key, $this)
+                $this->_checkAssocitation($info, $key, $this->_table)
             );
         }
         return $requestAssoc;
