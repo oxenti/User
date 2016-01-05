@@ -17,7 +17,7 @@ class AppTable extends Table
     {
         parent::initialize($config);
         
-        $this->addBehavior('Associatable');
+        $this->addBehavior('User.Associatable');
     }
     /**
      * Set the plugin's custom database connection
