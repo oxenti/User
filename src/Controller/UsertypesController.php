@@ -37,6 +37,7 @@ class UsertypesController extends AppController
            'conditions' => ['id <>' => 100],
            'order' => ['Usertypes.name'],
         ];
+
         $this->set('usertypes', $this->paginate($this->Usertypes));
         $this->set('_serialize', ['usertypes']);
     }

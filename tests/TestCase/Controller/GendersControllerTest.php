@@ -36,12 +36,11 @@ class GendersControllerTest extends IntegrationTestCase
         $responseData = json_decode($this->_response->body());
         $count = count($responseData->genders);
 
-        // debug($this->_response->body());
-
-        $genders = TableRegistry::get('Genders');
+        $genders = TableRegistry::get('User.Genders');
         $query = $genders->find('all')
             ->select(['id', 'name'])
             ->order(['Genders.name']);
+            
         $gendersJson = json_encode(['genders' => $query->toArray()], JSON_PRETTY_PRINT);
         
         $this->assertEquals($count, $query->count());
