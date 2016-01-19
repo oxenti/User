@@ -29,7 +29,7 @@ class UsersController extends AppController
         parent::beforeFilter($event);
 
         if (isset($this->Auth) && !isset(getallheaders()['Authorization'])) {
-            $this->Auth->allow(['getToken', 'add', 'verify', 'resetPassword', 'linkedinHandler']);
+            $this->Auth->allow(['getToken', 'add', 'verify', 'resetPassword', 'linkedinHandler', 'verifyLinkedin']);
 
         }
     }
