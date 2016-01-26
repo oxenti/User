@@ -7,6 +7,7 @@ use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
+use Cake\Routing\Router;
 use Cake\Utility\Security;
 use Cake\Utility\Text;
 use User\Controller\AppController;
@@ -146,6 +147,8 @@ class UsersController extends AppController
         if (!$user) {
             throw new NotFoundException('The user could not be found. Please, try again.');
         }
+
+        $user->avatar_path = Router::url('/', true) . $user->avatar_path;
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
     }
@@ -182,15 +185,15 @@ class UsersController extends AppController
     public function edit($userId = null)
     {
         $this->request->allowMethod(['put', 'post']);
-
         $contain = $this->Users->getRequestAssociations($this->request->data);
         $queryAssociations = isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
         $contain = $this->Users->getValidAssociations(array_merge($contain, $queryAssociations));
-
+        // debug($this->request->data);
         $user = $this->Users->get($userId, ['contain' => $contain]);
+        
+        $user = $this->Users->patchEntity($user, $this->Users->formatRequestData($this->request->data));
         // debug($user);
         // die();
-        $user = $this->Users->patchEntity($user, $this->Users->formatRequestData($this->request->data));
         if ($this->Users->save($user)) {
             $message = 'The user has been saved.';
             $this->set([
@@ -273,7 +276,7 @@ class UsersController extends AppController
      */
     public function resetPassword()
     {
-        $this->request->allowMethod('post');
+        $this->request->allowMethod(['post']);
 
         $code = isset($this->request->data['code']) ? $this->request->data['code'] : null;
         $email = isset($this->request->data['email']) ? $this->request->data['email'] : null;
@@ -334,7 +337,7 @@ class UsersController extends AppController
         if (!empty($options)) {
             $user = $this->Users->passwordResetCode($options);//password reset code
             if (!empty($user)) {
-                $email = new Email('default');
+                $email = new Email('gmail');
                 $code = $user->passwordchangecode;
                 $email->from(['me@example.com' => 'Your System'])
                     ->emailFormat('html')
@@ -368,18 +371,22 @@ class UsersController extends AppController
      */
     public function sendVerificationEmail()
     {
-        $user = $this->Users->get($this->Auth->user('id'));
+        $this->request->allowMethod(['post']);
+        if (! isset($this->request->data['email'])) {
+            throw new BadRequestException('Invalid data provided.');
+        }
+
+        $user = $this->Users->findByEmail($this->request->data['email'])->first();
         if (empty($user->emailcheckcode)) {
             throw new UnauthorizedException('Email already confirmed');
         } else {
             $user->emailcheckcode = md5(time() * rand());
+            $message = __('The email could not be sent. Please check errors.');
+            $success = false;
             if ($this->Users->sendVerificationEmail($user)) {//mudar nome
                 $this->Users->save($user);
                 $message = __('The email was resent. Please check your inbox.');
                 $success = true;
-            } else {
-                $message = __('The email could not be sent. Please check errors.');
-                $success = false;
             }
         }
         

@@ -3,6 +3,7 @@ namespace User\Model\Entity;
 
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
+use Cake\Routing\Router;
 
 /**
  * User Entity.
@@ -52,6 +53,10 @@ class User extends Entity
         return $hasher->hash($value);
     }
 
+    // protected function _getAvatarPath()
+    // {
+    //     return Router::url('/', true) . $this->_properties['avatar_path'];
+    // }
     /**
      * virtual field full name
      */
