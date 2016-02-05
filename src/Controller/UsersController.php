@@ -469,7 +469,7 @@ class UsersController extends AppController
      */
     public function emailExists()
     {
-        $user = $this->Users->findByEmail($this->request->data['email'])->first();
+        $user = $this->Users->findByEmail($this->request->data['email'])->hydrate(false)->select('id')->first();
         $success = false;
         if ($user) {
             $success = true;
