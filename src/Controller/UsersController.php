@@ -29,7 +29,7 @@ class UsersController extends AppController
         parent::beforeFilter($event);
 
         if (isset($this->Auth) && !isset(getallheaders()['Authorization'])) {
-            $this->Auth->allow(['getToken', 'add', 'verify', 'resetPassword', 'linkedinHandler', 'verifyLinkedin']);
+            $this->Auth->allow(['getToken', 'emailExists', 'add', 'verify', 'resetPassword', 'linkedinHandler', 'verifyLinkedin']);
 
         }
     }
@@ -460,5 +460,23 @@ class UsersController extends AppController
 
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
+    }
+    
+    /**
+     * emailExists method
+     * verify if the given email is already in use
+     * @param string $this->request->data['email'] e-mail
+     */
+    public function emailExists()
+    {
+        $user = $this->Users->findByEmail($this->request->data['email'])->first();
+        $success = false;
+        if ($user) {
+            $success = true;
+        }
+        $this->set([
+            'exists' => $success,
+            '_serialize' => ['exists']
+        ]);
     }
 }
