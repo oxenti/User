@@ -131,6 +131,13 @@ class UsersTable extends AppTable
         }
     }
 
+    public function afterSave($event, $entity, $options)
+    {
+        if ($entity->isNew()) {
+            $this->sendVerificationEmail($entity);
+        }
+    }
+
     public function saveUser(Array $data)
     {
         $user = $this->newEntity($this->formatRequestData($data));

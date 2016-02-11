@@ -161,8 +161,6 @@ class UsersController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post']);
-        // echo json_encode($this->request->data);
-        // die();
         $user = $this->Users->saveUser($this->request->data);
         if (empty($user->errors())) {
             $message = 'The user has been saved.';
