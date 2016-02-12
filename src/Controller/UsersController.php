@@ -249,6 +249,8 @@ class UsersController extends AppController
             throw new NotFoundException(__('Code not found'));
         } else {
             $user->emailcheckcode = '';
+            $user->is_active = 1;
+            
             if ($this->Users->save($user)) {
                 $message = __('The confirmation code has been accepted. You may log in now!');
                 $success = true;
