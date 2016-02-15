@@ -148,7 +148,7 @@ class UsersController extends AppController
             throw new NotFoundException('The user could not be found. Please, try again.');
         }
 
-        $user->avatar_path = Router::url('/', true) . $user->avatar_path;
+        // $user->avatar_path = Router::url('/', true) . $user->avatar_path;
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
     }

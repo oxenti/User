@@ -53,17 +53,9 @@ class User extends Entity
         return $hasher->hash($value);
     }
 
-    // protected function _getAvatarPath()
-    // {
-    //     return Router::url('/', true) . $this->_properties['avatar_path'];
-    // }
-    /**
-     * virtual field full name
-     */
-    // protected function _getFullName()
-    // {
-    //     return '';
-    //     // return $this->_properties['personalinformation']['first_name'] . ' ' .
-    //     //     $this->_properties['personalinformation']['last_name'];
-    // }
+    protected function _getAvatarPath($path)
+    {
+        return $path ? Router::url('/', true) . $path : '';
+    }
+ 
 }
