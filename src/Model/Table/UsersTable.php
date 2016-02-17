@@ -173,20 +173,17 @@ class UsersTable extends AppTable
      */
     public function sendVerificationEmail($user)
     {
-        $email = new Email('gmail');
+        $email = new Email(Configure::read('auth_plugin.email_settings.transport'));
         $code = $user->emailcheckcode;
 
-        $email->from(['oxentisolutions@gmail.com' => 'AcheSeuEstudio'])
+        $email->from(Configure::read('auth_plugin.email_settings.from'))
             ->emailFormat('html')
             ->template('register', 'default')
-            ->viewVars(['code' => $code])
+            ->viewVars(['serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => Configure::read('auth_plugin.verify_url')])
             ->to($user->email)
-            ->subject('Bem vindo ao AcheSeuEstúdio!!!');
+            ->subject(Configure::read('auth_plugin.email_settings.register_subject'));
 
-        if ($email->send()) {
-            return true;
-        }
-        return false;
+        return $email->send();
     }
 
     /**
@@ -198,8 +195,8 @@ class UsersTable extends AppTable
     public function checkPasswordToken($passwordChangeCode = null)
     {
         $user = $this->find()
-        ->where(['Users.passwordchangecode' => $passwordChangeCode])
-        ->first();
+            ->where(['Users.passwordchangecode' => $passwordChangeCode])
+            ->first();
         if (empty($user)) {
             return false;
         }
@@ -300,23 +297,17 @@ class UsersTable extends AppTable
      * @param array $passwordData Post data from controller
      * @return boolean True on success
      */
-    public function resetPassword($code, $email, $newPassword)
+    public function resetPassword($user, $data)
     {
-        $user = $this->find()
-            ->where(['passwordchangecode' => $code, 'email' => $email])
-            ->first();
-    
-        if (empty($user)) {
+        if (empty($user) || empty($data) || !isset($data['password'])) {
             return false;
         }
 
-        $user->password = $this->hash($newPassword);
+        // $user->password = $this->hash($data['password']);
+        $user->password = $data['password']; // the entity automatically hashes the password.
         $user->passwordchangecode = null;
-        if (! $this->save($user)) {
-            return false;
-        }
 
-        return true;
+        return $this->save($user);
     }
 
     /**

@@ -16,7 +16,16 @@
 <?php
 $content = explode("\n", $content);
 
-foreach ($content as $line):
-    echo '<p> ' . $line . "</p>\n";
-endforeach;
 ?>
+<h3><?= __('Your e-mail verification at ') . $serviceName;?></h3>
+<p>
+	<?= __('You registered at our service.');?> <?= __('To ensure that this e-mail is valid, please follow this link:');?>
+</p>
+<p>
+<?php
+	echo $this->Html->link(__('Click here to verify'), $url . '/' . $code);
+?>
+</p>
+<p><?= sprintf(__('Verification code: %s'), $code);?></p>
+<p><?= __('Best regards');?></p>
+<p><?= $serviceName ?></p>
