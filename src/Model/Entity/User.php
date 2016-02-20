@@ -43,6 +43,7 @@ class User extends Entity
     // protected $_virtual = ['full_name'];
 
     protected $_hidden = ['password', 'login', 'emailcheckcode', 'passwordchangecode', 'expire_account', 'token', 'created', 'is_active', 'modified'];
+    protected $_virtual = ['avatar_url'];
 
     /**
      * Set Hashed password, before save
@@ -53,9 +54,14 @@ class User extends Entity
         return $hasher->hash($value);
     }
 
-    protected function _getAvatarPath($path)
+    protected function _getAvatarUrl()
     {
-        return $path ? Router::url('/', true) . $path : '';
+        $path = '';
+        if (isset($this->_properties['avatar_path'])) {
+            $path = (strpos('http://', $this->_properties['avatar_path']) || strpos('https://', $this->_properties['avatar_path'])) ? $this->_properties['avatar_path'] : Router::url('/', true) . $this->_properties['avatar_path'];
+        }
+        
+        return $path;
     }
  
 }
