@@ -58,7 +58,9 @@ class User extends Entity
     {
         $path = '';
         if (isset($this->_properties['avatar_path'])) {
-            $path = (strpos('http://', $this->_properties['avatar_path']) || strpos('https://', $this->_properties['avatar_path'])) ? $this->_properties['avatar_path'] : Router::url('/', true) . $this->_properties['avatar_path'];
+            if ($this->_properties['avatar_path']) {
+                $path = (strpos('http://', $this->_properties['avatar_path']) || strpos('https://', $this->_properties['avatar_path'])) ? $this->_properties['avatar_path'] : Router::url('/', true) . $this->_properties['avatar_path'];
+            }
         }
         
         return $path;
