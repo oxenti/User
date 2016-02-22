@@ -176,10 +176,11 @@ class UsersTable extends AppTable
         $email = new Email(Configure::read('auth_plugin.email_settings.transport'));
         $code = $user->emailcheckcode;
 
+        $verificationUrl = Configure::read('debug') ? Configure::read('auth_plugin.verify_url.dev') : Configure::read('auth_plugin.verify_url.production');
         $email->from(Configure::read('auth_plugin.email_settings.from'))
             ->emailFormat('html')
             ->template('register', 'default')
-            ->viewVars(['serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => Configure::read('auth_plugin.verify_url')])
+            ->viewVars(['serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => $verificationUrl])
             ->to($user->email)
             ->subject(Configure::read('auth_plugin.email_settings.register_subject'));
 

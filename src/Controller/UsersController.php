@@ -337,10 +337,11 @@ class UsersController extends AppController
         $email = new Email(Configure::read('auth_plugin.email_settings.transport')); // read Config file
         $code = $user->passwordchangecode;
 
+        $resetUrl = Configure::read('debug') ? Configure::read('auth_plugin.reset_pass_url.dev') : Configure::read('auth_plugin.reset_pass_url.production');
         $email->from(Configure::read('auth_plugin.email_settings.from'))
             ->emailFormat('html')
             ->template('lost_password', 'default')
-            ->viewVars(['serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => Configure::read('auth_plugin.reset_pass_url')])
+            ->viewVars(['serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => $resetUrl])
             ->to($user->email)
             ->subject(Configure::read('auth_plugin.email_settings.reset_pass_subject'))
             ->send();
