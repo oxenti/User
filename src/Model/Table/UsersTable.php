@@ -231,6 +231,10 @@ class UsersTable extends AppTable
      */
     public function formatRequestData(array $data, $entity = null)
     {
+        if (isset($data['user'])) {
+            $data = $data['user'];
+        }
+        
         $personalFields = ['gender_id', 'first_name', 'last_name', 'birth', 'phone1', 'phone2'];
 
         foreach ($personalFields as $field) {
