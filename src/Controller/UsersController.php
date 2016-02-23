@@ -190,9 +190,17 @@ class UsersController extends AppController
         $contain = $this->Users->getValidAssociations(array_merge($contain, $queryAssociations));
         
         $user = $this->Users->get($userId, ['contain' => $contain]);
+        if (isset($this->request->data['password'])) {
+            unset($this->request->data['password']);
+        }
+
+        if (isset($this->request->data['user']['password'])) {
+            unset($this->request->data['user']['password']);
+        }
+
         $user = $this->Users->patchEntity($user, $this->Users->formatRequestData($this->request->data));
 
-        if (! $this->Users->save($user)) {
+        if (! $this->Users->save($user, ['associated' => ['Personalinformations', 'Addresses'] ])) {
             throw new BadRequestException('Could not update the user');
         }
 
@@ -201,6 +209,34 @@ class UsersController extends AppController
             'success' => true,
             'message' => $message,
             '_serialize' => ['success', 'message']
+        ]);
+    }
+
+    /**
+     * Updates the user password
+     * @param int $userid User's Id
+     * @return null
+     */
+    public function changePassword($userId)
+    {
+        $this->request->allowMethod('post');
+        if (empty($this->request->data)) {
+            throw new BadRequestException("No data provided.");
+        }
+        $data = isset($this->request->data['user']) ? $this->request->data['user'] : $this->request->data;
+        if (!isset($data['password'])) {
+            throw new BadRequestException("No password provided.");
+        }
+        $user = $this->Users->get($userId);
+
+        $user->password = $data['password'];
+        if (!$this->Users->save($user)) {
+            throw new BadRequestException("Password could not be altered");
+        }
+
+        $this->set([
+            'message' => __("The password was successfully updated."),
+            '_serialize' => ['message']
         ]);
     }
 
