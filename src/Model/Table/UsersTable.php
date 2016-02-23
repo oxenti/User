@@ -216,6 +216,12 @@ class UsersTable extends AppTable
         return $hasher->hash($value);
     }
 
+    public function checkPassword($password, $currentPass)
+    {
+        $hasher = new DefaultPasswordHasher();
+        return $hasher->check($password, $currentPass);
+    }
+
     /**
      * formatRequestData method
      * Formats user request data extracting Personal information

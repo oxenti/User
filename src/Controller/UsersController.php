@@ -224,12 +224,16 @@ class UsersController extends AppController
             throw new BadRequestException("No data provided.");
         }
         $data = isset($this->request->data['user']) ? $this->request->data['user'] : $this->request->data;
-        if (!isset($data['password'])) {
+        if (!isset($data['old_password']) || isset($data['new_password'])) {
             throw new BadRequestException("No password provided.");
         }
         $user = $this->Users->get($userId);
 
-        $user->password = $data['password'];
+        if (! $this->Users->checkPassword($this->request->data['old_password'], $user->password)) {
+            throw new BadRequestException("Invalid user password.");
+        }
+
+        $user->password = $data['new_password'];
         if (!$this->Users->save($user)) {
             throw new BadRequestException("Password could not be altered");
         }
