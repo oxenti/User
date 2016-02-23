@@ -185,23 +185,23 @@ class UsersController extends AppController
     public function edit($userId = null)
     {
         $this->request->allowMethod(['put', 'post']);
-        $contain = $this->Users->getRequestAssociations($this->request->data);
+        
+        $data = $this->Users->formatRequestData($this->request->data);
+        $contain = $this->Users->getRequestAssociations($data);
+
         $queryAssociations = isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
         $contain = $this->Users->getValidAssociations(array_merge($contain, $queryAssociations));
         
         $user = $this->Users->get($userId, ['contain' => $contain]);
-        if (isset($this->request->data['password'])) {
-            unset($this->request->data['password']);
+
+        if (isset($data['password'])) {
+            unset($data['password']);
         }
 
-        if (isset($this->request->data['user']['password'])) {
-            unset($this->request->data['user']['password']);
-        }
-
-        $user = $this->Users->patchEntity($user, $this->Users->formatRequestData($this->request->data));
+        $user = $this->Users->patchEntity($user, $this->Users->setEntityUserIds($data, $user));
 
         if (! $this->Users->save($user, ['associated' => ['Personalinformations', 'Addresses'] ])) {
-            throw new BadRequestException('Could not update the user');
+            throw new BadRequestException(json_encode($user->errors(), JSON_PRETTY_PRINT));
         }
 
         $message = 'The user has been updated.';
@@ -224,7 +224,7 @@ class UsersController extends AppController
             throw new BadRequestException("No data provided.");
         }
         $data = isset($this->request->data['user']) ? $this->request->data['user'] : $this->request->data;
-        if (!isset($data['old_password']) || isset($data['new_password'])) {
+        if (!isset($data['old_password']) || !isset($data['new_password'])) {
             throw new BadRequestException("No password provided.");
         }
         $user = $this->Users->get($userId);

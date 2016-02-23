@@ -126,14 +126,14 @@ class UsersTable extends AppTable
      */
     public function beforeSave($event, $entity, $options)
     {
-        if ($entity->isNew()) {
+        if ($entity->isNew() || ($entity->getOriginal('email') != $entity->email)) {
             $entity->emailcheckcode = md5(time() * rand());
         }
     }
 
     public function afterSave($event, $entity, $options)
     {
-        if ($entity->isNew()) {
+        if ($entity->isNew() || ($entity->getOriginal('email') != $entity->email)) {
             $this->sendVerificationEmail($entity);
         }
     }
@@ -253,25 +253,24 @@ class UsersTable extends AppTable
      * @param Entity $entity Business entity
      * @return array
      */
-    protected function setEntityUserIds(array $userData, $entity)
+    public function setEntityUserIds(array $userData, $entity)
     {
-        if (isset($entity->user->id)) {
-            $userData['id'] = $entity->user->id;
+        if (isset($entity->id)) {
+            $userData['id'] = $entity->id;
         }
 
-        if (isset($entity->user->personalinformation_id)) {
-            $userData['personalinformation']['id'] = $entity->user->personalinformation_id;
+        if (isset($entity->personalinformation_id)) {
+            $userData['personalinformation']['id'] = $entity->personalinformation_id;
         }
 
-        if (isset($entity->user->addresses)) {
-            foreach ($entity->user->addresses as $address) {
+        if (isset($entity->addresses)) {
+            foreach ($entity->addresses as $address) {
                 if ($address->is_active) {
                     $userData['addresses'][0]['id'] = $address->id;
                     break;
                 }
             }
         }
-
         return $userData;
     }
 
