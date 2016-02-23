@@ -98,8 +98,6 @@ class PersonalinformationsTable extends AppTable
      */
     public function buildRules(RulesChecker $rules)
     {
-        // $rules->add($rules->isUnique(['user_id']));
-        // $rules->add($rules->existsIn(['user_id'], 'Users'));
         $rules->add($rules->existsIn(['gender_id'], 'Genders'));
         return $rules;
     }

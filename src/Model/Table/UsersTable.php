@@ -234,8 +234,8 @@ class UsersTable extends AppTable
         if (isset($data['user'])) {
             $data = $data['user'];
         }
-        
-        $personalFields = ['gender_id', 'first_name', 'last_name', 'birth', 'phone1', 'phone2'];
+
+        $personalFields = ['gender_id', 'first_name', 'last_name', 'birth', 'birthday', 'phone1', 'phone2'];
 
         foreach ($personalFields as $field) {
             if (isset($data[$field])) {
@@ -248,6 +248,11 @@ class UsersTable extends AppTable
                 unset($data['User'][$field]);
             }
         }
+
+        if (isset($data['personalinformation']['birthday'])) {
+            $data['personalinformation']['birth'] = $data['personalinformation']['birthday'];
+        }
+        
         return $entity ? $this->setEntityUserIds($data, $entity) : $data;
     }
 
