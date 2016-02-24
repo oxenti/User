@@ -22,7 +22,7 @@ class Personalinformation extends Entity
 
     protected $_virtual = ['full_name', "birthday"];
 
-    protected $_hidden = ['is_active', 'birth', 'modified', 'created', 'gender_id'];
+    protected $_hidden = ['id', 'first_name', 'last_name', 'is_active', 'birth', 'modified', 'created', 'gender_id'];
     /**
      * virtual field full name
      */
