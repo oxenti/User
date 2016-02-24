@@ -42,7 +42,7 @@ class User extends Entity
 
     // protected $_virtual = ['full_name'];
 
-    protected $_hidden = ['avatar_path', 'personalinformation_id', 'complete_setup', 'password', 'login', 'emailcheckcode', 'passwordchangecode', 'expire_account', 'token', 'created', 'is_active', 'modified'];
+    protected $_hidden = ['avatar_path', 'personalinformation_id', 'password', 'login', 'emailcheckcode', 'passwordchangecode', 'expire_account', 'token', 'created', 'is_active', 'modified'];
     protected $_virtual = ['avatar_url'];
 
     /**
