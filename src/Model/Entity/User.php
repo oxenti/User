@@ -3,6 +3,7 @@ namespace User\Model\Entity;
 
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
+use Cake\Routing\Router;
 
 /**
  * User Entity.
@@ -41,7 +42,8 @@ class User extends Entity
 
     // protected $_virtual = ['full_name'];
 
-    protected $_hidden = ['password', 'login', 'emailcheckcode', 'passwordchangecode', 'expire_account', 'token', 'created', 'is_active', 'modified'];
+    protected $_hidden = ['avatar_path', 'personalinformation_id', 'password', 'login', 'emailcheckcode', 'passwordchangecode', 'expire_account', 'token', 'created', 'is_active', 'modified'];
+    protected $_virtual = ['avatar_url'];
 
     /**
      * Set Hashed password, before save
@@ -52,13 +54,16 @@ class User extends Entity
         return $hasher->hash($value);
     }
 
-    /**
-     * virtual field full name
-     */
-    // protected function _getFullName()
-    // {
-    //     return '';
-    //     // return $this->_properties['personalinformation']['first_name'] . ' ' .
-    //     //     $this->_properties['personalinformation']['last_name'];
-    // }
+    protected function _getAvatarUrl()
+    {
+        $path = '';
+        if (isset($this->_properties['avatar_path'])) {
+            if ($this->_properties['avatar_path']) {
+                $path = (strpos('http://', $this->_properties['avatar_path']) || strpos('https://', $this->_properties['avatar_path'])) ? $this->_properties['avatar_path'] : Router::url('/', true) . $this->_properties['avatar_path'];
+            }
+        }
+        
+        return $path;
+    }
+ 
 }

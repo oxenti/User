@@ -19,6 +19,7 @@ class UsersFixture extends AppFixture
     public $fields = [
         'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => true, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
         'usertype_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'personalinformation_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'avatar_path' => ['type' => 'text', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'password' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'fixed' => null],
         'email' => ['type' => 'string', 'length' => 128, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -51,6 +52,7 @@ class UsersFixture extends AppFixture
         [
             'id' => 1,
             'usertype_id' => 100,
+            'personalinformation_id' => 1,
             'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
             'password' => '$2y$10$PFZqzrrtAon2wDUcCvctRu4VtRpnqWqmQotmLG6s880G.lR7PFCwe',
             'email' => 'root@root.com',
@@ -61,6 +63,7 @@ class UsersFixture extends AppFixture
         [
             'id' => 2,
             'usertype_id' => 2,
+            'personalinformation_id' => 1,
             'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
             'password' => '$2y$10$PFZqzrrtAon2wDUcCvctRu4VtRpnqWqmQotmLG6s880G.lR7PFCwe',
             'email' => 'institution@institution.com',
@@ -71,6 +74,7 @@ class UsersFixture extends AppFixture
         [
             'id' => 3,
             'usertype_id' => 1,
+            'personalinformation_id' => 1,
             'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
             'password' => '$2y$10$PFZqzrrtAon2wDUcCvctRu4VtRpnqWqmQotmLG6s880G.lR7PFCwe',
             'email' => 'aluno@aluno.com',
@@ -81,6 +85,7 @@ class UsersFixture extends AppFixture
         [
             'id' => 4,
             'usertype_id' => 1,
+            'personalinformation_id' => 1,
             'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
             'password' => '$2y$10$PFZqzrrtAon2wDUcCvctRu4VtRpnqWqmQotmLG6s880G.lR7PFCwe',
             'email' => 'alunox@aluno.com',
@@ -91,6 +96,7 @@ class UsersFixture extends AppFixture
         [
             'id' => 5,
             'usertype_id' => 3,
+            'personalinformation_id' => 1,
             'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
             'password' => '$2y$10$PFZqzrrtAon2wDUcCvctRu4VtRpnqWqmQotmLG6s880G.lR7PFCwe',
             'email' => 'professor@professor.com',
@@ -101,6 +107,7 @@ class UsersFixture extends AppFixture
         [
             'id' => 6,
             'usertype_id' => 3,
+            'personalinformation_id' => 1,
             'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
             'password' => '$2y$10$PFZqzrrtAon2wDUcCvctRu4VtRpnqWqmQotmLG6s880G.lR7PFCwe',
             'email' => 'professorX@professor.com',
@@ -111,6 +118,7 @@ class UsersFixture extends AppFixture
         [
             'id' => 7,
             'usertype_id' => 2,
+            'personalinformation_id' => 1,
             'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
             'password' => '$2y$10$PFZqzrrtAon2wDUcCvctRu4VtRpnqWqmQotmLG6s880G.lR7PFCwe',
             'email' => 'institution2@institution.com',
@@ -121,6 +129,7 @@ class UsersFixture extends AppFixture
         [
             'id' => 8,
             'usertype_id' => 4,
+            'personalinformation_id' => 1,
             'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
             'password' => '$2y$10$W8cHelHWOsN/uOoJlexrv.gMQiJ8LBq4hE8CAPI6.qYJpQQfn6i9u',
             'email' => 'tutor@tutor.com',
@@ -131,6 +140,7 @@ class UsersFixture extends AppFixture
         [
             'id' => 9,
             'usertype_id' => 4,
+            'personalinformation_id' => 1,
             'avatar_path' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
             'password' => '$2y$10$W8cHelHWOsN/uOoJlexrv.gMQiJ8LBq4hE8CAPI6.qYJpQQfn6i9u',
             'email' => 'tutor2@tutor.com',

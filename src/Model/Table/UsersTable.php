@@ -21,7 +21,6 @@ use User\Model\Table\AppTable;
  */
 class UsersTable extends AppTable
 {
-
     /**
      * Initialize method
      *
@@ -54,8 +53,8 @@ class UsersTable extends AppTable
             'className' => 'User.Usertypes'
         ]);
 
-        $this->hasOne('Personalinformations', [
-            'foreignKey' => 'user_id',
+        $this->belongsTo('Personalinformations', [
+            'foreignKey' => 'personalinformation_id',
             'className' => 'User.Personalinformations'
         ]);
 
@@ -78,6 +77,9 @@ class UsersTable extends AppTable
         $validator
             ->add('id', 'valid', ['rule' => 'numeric'])
             ->allowEmpty('id', 'create');
+        $validator
+            ->add('personalinformation_id', 'valid', ['rule' => 'numeric'])
+            ->notEmpty('personalinformation_id');
 
         $validator
             ->allowEmpty('avatar_path');
@@ -125,23 +127,31 @@ class UsersTable extends AppTable
      */
     public function beforeSave($event, $entity, $options)
     {
-        if ($entity->isNew()) {
+        if ($entity->isNew() || ($entity->getOriginal('email') != $entity->email)) {
             $entity->emailcheckcode = md5(time() * rand());
         }
     }
 
-    
+    public function afterSave($event, $entity, $options)
+    {
+        if ($entity->isNew() || ($entity->getOriginal('email') != $entity->email)) {
+            $this->sendVerificationEmail($entity);
+        }
+    }
+
     public function saveUser(Array $data)
     {
         $url = $data['urlVerify'];
         unset($data['urlVerify']);
         $user = $this->newEntity($this->formatRequestData($data));
-        if (! $this->save($user)) {
-            return false;
+
+        if ($this->save($user)) {
+            if (! $this->sendVerificationEmail($user)) {
+                $this->delete($user);
+                return false;
+            }
         }
-        if (! $this->sendVerificationEmail($user, $url)) {
-            return false;
-        }
+
         return $user;
     }
 
@@ -167,18 +177,18 @@ class UsersTable extends AppTable
      */
     public function sendVerificationEmail($user, $url)
     {
-        $email = new Email('default');
+        $email = new Email(Configure::read('auth_plugin.email_settings.transport'));
         $code = $user->emailcheckcode;
-        $email->from(['me@example.com' => 'Your System'])
+
+        $verificationUrl = Configure::read('debug') ? Configure::read('auth_plugin.verify_url.dev') : Configure::read('auth_plugin.verify_url.production');
+        $email->from(Configure::read('auth_plugin.email_settings.from'))
             ->emailFormat('html')
             ->template('register', 'default')
-            ->viewVars(['code' => $code, 'url' => $url])
+            ->viewVars(['serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => $verificationUrl])
             ->to($user->email)
-            ->subject('Your System registration');
-        if ($email->send()) {
-            return true;
-        }
-        return false;
+            ->subject(Configure::read('auth_plugin.email_settings.register_subject'));
+
+        return $email->send();
     }
 
     /**
@@ -190,8 +200,8 @@ class UsersTable extends AppTable
     public function checkPasswordToken($passwordChangeCode = null)
     {
         $user = $this->find()
-        ->where(['Users.passwordchangecode' => $passwordChangeCode])
-        ->first();
+            ->where(['Users.passwordchangecode' => $passwordChangeCode])
+            ->first();
         if (empty($user)) {
             return false;
         }
@@ -210,6 +220,12 @@ class UsersTable extends AppTable
         return $hasher->hash($value);
     }
 
+    public function checkPassword($password, $currentPass)
+    {
+        $hasher = new DefaultPasswordHasher();
+        return $hasher->check($password, $currentPass);
+    }
+
     /**
      * formatRequestData method
      * Formats user request data extracting Personal information
@@ -217,14 +233,15 @@ class UsersTable extends AppTable
      * @param array $data  Request Data
      * @return array  Formated data
      */
-    public function formatRequestData(Array $data)
+    public function formatRequestData(array $data, $entity = null)
     {
-        $fields = ['gender_id', 'first_name', 'last_name', 'birth', 'phone1', 'phone2'];
-        if (isset($data['birth'])) {
-            $data['birth'] = new Time($data['birth']);
+        if (isset($data['user'])) {
+            $data = $data['user'];
         }
+     
+        $personalFields = ['gender_id', 'first_name', 'last_name', 'birth', 'birthday', 'phone1', 'phone2'];
 
-        foreach ($fields as $field) {
+        foreach ($personalFields as $field) {
             if (isset($data[$field])) {
                 $data['personalinformation'][$field] = $data[$field];
                 unset($data[$field]);
@@ -235,7 +252,61 @@ class UsersTable extends AppTable
                 unset($data['User'][$field]);
             }
         }
+
+        if (isset($data['personalinformation']['birthday'])) {
+            $data['personalinformation']['birth'] = $data['personalinformation']['birthday'];
+        }
+        
+        return $entity ? $this->setEntityUserIds($data, $entity) : $data;
+    }
+
+    /**
+     * setEntityUserIds method
+     * @param array $userData User data array
+     * @param Entity $entity Business entity
+     * @return array
+     */
+    public function setEntityUserIds(array $userData, $entity)
+    {
+        if (isset($entity->id)) {
+            $userData['id'] = $entity->id;
+        }
+
+        if (isset($entity->personalinformation_id)) {
+            $userData['personalinformation']['id'] = $entity->personalinformation_id;
+        }
+
+        if (isset($entity->addresses)) {
+            foreach ($entity->addresses as $address) {
+                if ($address->is_active) {
+                    $userData['addresses'][0]['id'] = $address->id;
+                    break;
+                }
+            }
+        }
+        return $userData;
+    }
+
+    /**
+     * setUsertype method
+     * @param array $data User data
+     * @param string $tableName Table class name
+     * @return array
+     */
+    public function setUsertype(array $data, $tableName)
+    {
+        $data['usertype_id'] = $this->getUserType($tableName);
         return $data;
+    }
+
+    /**
+     * getUsertype method Returns the user type id for a table class
+     * @param string $tableName Table class name
+     * @return string|false
+     */
+    public function getUserType($tableName)
+    {
+        return Configure::read('user_plugin.usertypes.' . $tableName);
     }
 
     /**
@@ -245,23 +316,17 @@ class UsersTable extends AppTable
      * @param array $passwordData Post data from controller
      * @return boolean True on success
      */
-    public function resetPassword($code, $email, $newPassword)
+    public function resetPassword($user, $data)
     {
-        $user = $this->find()
-            ->where(['passwordchangecode' => $code, 'email' => $email])
-            ->first();
-    
-        if (empty($user)) {
+        if (empty($user) || empty($data) || !isset($data['password'])) {
             return false;
         }
 
-        $user->password = $this->hash($newPassword);
+        // $user->password = $this->hash($data['password']);
+        $user->password = $data['password']; // the entity automatically hashes the password.
         $user->passwordchangecode = null;
-        if (! $this->save($user)) {
-            return false;
-        }
 
-        return true;
+        return $this->save($user);
     }
 
     /**
@@ -301,7 +366,7 @@ class UsersTable extends AppTable
         if (! $resource) {
             return false;
         }
-
+        
         if ($resource[$userFK] != $userId) {
             return false;
         }
