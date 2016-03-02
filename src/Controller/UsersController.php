@@ -12,6 +12,7 @@ use Cake\Network\Exception\UnauthorizedException;
 use Cake\Routing\Router;
 use Cake\Utility\Security;
 use Cake\Utility\Text;
+use Firebase\JWT\JWT;
 use User\Controller\AppController;
 
 /**
@@ -87,7 +88,7 @@ class UsersController extends AppController
      */
     protected function _makeToken($userId)
     {
-        $token = \JWT::encode(
+        $token = JWT::encode(
             [
                 'id' => $userId,
                 'exp' => time() + 604800
