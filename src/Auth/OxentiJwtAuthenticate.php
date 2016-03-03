@@ -45,6 +45,10 @@ class OxentiJwtAuthenticate extends BaseAuthanticate
     {
         $payload = $this->getPayload($request);
 
+        if (! isset($payload->id)) {
+            return false;
+        }
+        
         $user = $this->_findUser($payload->id);
         if (!$user) {
             return false;
