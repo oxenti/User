@@ -84,7 +84,7 @@ class OxentiJwtAuthenticate extends BaseAuthanticate
         }
 
         // $header = $request->header($config['header']);
-        $header = getallheaders()['Authorization'];
+        $header = isset(getallheaders()['Authorization']) ? getallheaders()['Authorization'] : null;
         if ($header) {
             return $this->_token = str_ireplace($config['prefix'] . ' ', '', $header);
         }
