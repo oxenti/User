@@ -11,6 +11,7 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use User\Model\Entity\User;
 use User\Model\Table\AppTable;
+use User\Event\UserListener;
 
 /**
  * Users Model
@@ -64,6 +65,10 @@ class UsersTable extends AppTable
         ]);
 
         $this->_setAppRelations(Configure::read('user_plugin.relations'));
+
+        // Register event listeners
+        $UserListener = new UserListener();
+        $this->eventManager()->on($UserListener);
     }
 
     /**
@@ -135,14 +140,16 @@ class UsersTable extends AppTable
     public function afterSave($event, $entity, $options)
     {
         if ($entity->isNew() || ($entity->getOriginal('email') != $entity->email)) {
-            $this->sendVerificationEmail($entity);
+            // $this->sendVerificationEmail($entity);
+            $event = new Event('Model.User.requireVerification', $this, $entity);
+            $this->eventManager()->dispatch($event);
         }
     }
 
     public function saveUser(Array $data)
     {
-        $url = $data['urlVerify'];
-        unset($data['urlVerify']);
+        // $url = $data['urlVerify'];
+        // unset($data['urlVerify']);
         $user = $this->newEntity($this->formatRequestData($data));
 
         if ($this->save($user)) {
