@@ -279,11 +279,11 @@ class UsersTable extends AppTable
             $userData['id'] = $entity->id;
         }
 
-        if (isset($entity->personalinformation_id)) {
+        if (isset($entity->personalinformation_id) && isset($userData['personalinformation'])) {
             $userData['personalinformation']['id'] = $entity->personalinformation_id;
         }
 
-        if (isset($entity->addresses)) {
+        if (isset($entity->addresses) && isset($userData['addresses'])) {
             foreach ($entity->addresses as $address) {
                 if ($address->is_active) {
                     $userData['addresses'][0]['id'] = $address->id;

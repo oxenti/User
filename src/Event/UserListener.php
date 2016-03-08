@@ -1,10 +1,10 @@
 <?php
 namespace User\Event;
 
-use Cake\Event\EventListener;
+use Cake\Event\EventListenerInterface;
 use Cake\ORM\TableRegistry;
 
-class UserListener implements EventListener
+class UserListener implements EventListenerInterface
 {
     /**
      * List of implemented events
