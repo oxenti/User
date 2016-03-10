@@ -193,7 +193,7 @@ class UsersController extends AppController
         $contain = $this->Users->getRequestAssociations($data);
 
         $queryAssociations = isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
-        $contain = $this->Users->getValidAssociations(array_merge($contain, $queryAssociations));
+        $contain = $this->Users->getValidAssociations(array_merge(['Personalinformations'], $contain, $queryAssociations));
         
         $user = $this->Users->get($userId, ['contain' => $contain]);
 
