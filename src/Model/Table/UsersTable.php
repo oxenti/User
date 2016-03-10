@@ -3,15 +3,16 @@ namespace User\Model\Table;
 
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Core\Configure;
+use Cake\Event\Event;
 use Cake\I18n\Time;
 use Cake\Network\Email\Email;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use User\Event\UserListener;
 use User\Model\Entity\User;
 use User\Model\Table\AppTable;
-use User\Event\UserListener;
 
 /**
  * Users Model
@@ -191,7 +192,7 @@ class UsersTable extends AppTable
         $email->from(Configure::read('auth_plugin.email_settings.from'))
             ->emailFormat('html')
             ->template('register', 'default')
-            ->viewVars(['serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => $verificationUrl])
+            ->viewVars(['name' => $user->personalinformation->first_name, 'serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => $verificationUrl])
             ->to($user->email)
             ->subject(Configure::read('auth_plugin.email_settings.register_subject'));
 

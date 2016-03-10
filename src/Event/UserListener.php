@@ -21,8 +21,6 @@ class UserListener implements EventListenerInterface
      */
     public function requestVerification($event, $entity, $options)
     {
-        debug($entity);
-        die();
         $Users = TableRegistry::get('User.Users');
         $Users->sendVerificationEmail($entity);
     }
