@@ -183,7 +183,7 @@ class UsersTable extends AppTable
      * @param User $user the User info.
      * @return bool
      */
-    public function sendVerificationEmail($user, $url)
+    public function sendVerificationEmail($user, $url = null)
     {
         $email = new Email(Configure::read('auth_plugin.email_settings.transport'));
         $code = $user->emailcheckcode;
