@@ -10,7 +10,7 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use User\Event\UserListener;
+use User\Mailer\UserMailer;
 use User\Model\Entity\User;
 use User\Model\Table\AppTable;
 
@@ -69,8 +69,8 @@ class UsersTable extends AppTable
         $this->_setAppRelations(Configure::read('user_plugin.relations'));
 
         // Register event listeners
-        $UserListener = new UserListener();
-        $this->eventManager()->on($UserListener);
+        $UserMailer = new UserMailer();
+        $this->eventManager()->on($UserMailer);
     }
 
     /**
