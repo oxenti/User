@@ -141,13 +141,26 @@ class UsersTable extends AppTable
 
     public function afterSave($event, $entity, $options)
     {
-        if ($entity->isNew() || ($entity->getOriginal('email') != $entity->email)) {
-            // $this->sendVerificationEmail($entity);
-            $event = new Event('Model.User.requireVerification', $this, $entity);
+        if ($entity->isNew()) {
+            $event = new Event('Model.User.requireVerification', $this, ['entity' => $entity, 'action' => 'register']);
+            $this->eventManager()->dispatch($event);
+        }
+
+        if (($entity->getOriginal('email') != $entity->email)) {
+            $event = new Event('Model.User.requireVerification', $this, ['entity' => $entity, 'action' => 'email_change']);
+            $this->eventManager()->dispatch($event);
+        }
+
+        if (($entity->getOriginal('password') != $entity->password)) {
+            $event = new Event('Model.User.requireVerification', $this, ['entity' => $entity, 'action' => 'password_change']);
             $this->eventManager()->dispatch($event);
         }
     }
 
+
+    /**
+     * Save a new User
+     */
     public function saveUser(Array $data)
     {
         // $url = $data['urlVerify'];
