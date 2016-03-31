@@ -40,7 +40,7 @@ class UserMailer extends Mailer
             ->from(Configure::read('auth_plugin.email_settings.from'))
             ->transport(Configure::read('auth_plugin.email_settings.transport'))
             ->to($user->email)
-            ->subject(Configure::read('auth_plugin.email_settings.register_subject'))
+            ->subject(Configure::read('auth_plugin.email_settings.subject.' . $template))
             ->emailFormat('html')
             ->template($template) // By default template with same name as method name is used.
             ->layout('default')

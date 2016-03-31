@@ -34,6 +34,10 @@ class UsersController extends AppController
         if (isset($this->Auth)) {
             $this->Auth->allow(['getToken', 'add', 'emailExists', 'verify', 'resetPassword', 'linkedinHandler', 'verifyLinkedin', 'sendVerificationEmail']);
         }
+        
+        if (isset(getallheaders()['Authorization'])) {
+            $this->Auth->deny(['getToken']);
+        }
     }
 
     /**
