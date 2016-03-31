@@ -24,7 +24,7 @@ class UserMailer extends Mailer
     /**
      * Request Verification Event listner
      */
-    public function requestVerification(Event $event, EntityInterface $entity, ArrayObject $options)
+    public function requestVerification($event, $entity, $options)
     {
         $this->send('verification', [$event->data['entity'], $event->data['action']]);
     }
