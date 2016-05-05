@@ -20,6 +20,7 @@ use User\Model\Table\AppTable;
  * @property \Cake\ORM\Association\BelongsTo    $Usertypes
  * @property \Cake\ORM\Association\HasOne       $Personalinformations
  * @property \Cake\ORM\Association\HasOne       $Usersocialdata
+ * @property \Cake\ORM\Association\HasMany      $Usertoken
  */
 class UsersTable extends AppTable
 {
@@ -64,6 +65,11 @@ class UsersTable extends AppTable
         $this->hasOne('Usersocialdata', [
             'foreignKey' => 'user_id',
             'className' => 'User.Usersocialdata'
+        ]);
+
+        $this->hasMany('Usertokens', [
+            'foreignKey' => 'user_id',
+            'className' => 'User.Usertokens'
         ]);
 
         $this->_setAppRelations(Configure::read('user_plugin.relations'));
@@ -125,7 +131,7 @@ class UsersTable extends AppTable
             ->add('usertype_id', 'valid', ['rule' => 'numeric'])
             ->requirePresence('usertype_id', 'create')
             ->notEmpty('usertype_id');
-            
+
         return $validator;
     }
 
@@ -260,7 +266,7 @@ class UsersTable extends AppTable
         if (isset($data['user'])) {
             $data = $data['user'];
         }
-     
+
         $personalFields = ['gender_id', 'first_name', 'last_name', 'birth', 'birthday', 'phone1', 'phone2'];
 
         foreach ($personalFields as $field) {
@@ -278,7 +284,7 @@ class UsersTable extends AppTable
         if (isset($data['personalinformation']['birthday'])) {
             $data['personalinformation']['birth'] = $data['personalinformation']['birthday'];
         }
-        
+
         return $entity ? $this->setEntityUserIds($data, $entity) : $data;
     }
 
@@ -388,11 +394,41 @@ class UsersTable extends AppTable
         if (! $resource) {
             return false;
         }
-        
+
         if ($resource[$userFK] != $userId) {
             return false;
         }
 
         return true;
+    }
+
+    public function getToken($userId, $userAgent = null)
+    {
+        $token = $this->Usertokens->generate($userId, $userAgent);
+        if (empty($token) || !is_array($token)) {
+            return $token;
+        }
+
+        if (isset($token['user_id'])) {
+            $token['id'] = $token['user_id'];
+            unset($token['user_id']);
+        }
+
+        if (isset($token['user_agent'])) {
+            unset($token['user_agent']);
+        }
+
+        if (isset($token['refresh_expires_in'])) {
+            unset($token['refresh_expires_in']);
+        }
+
+        /*
+         * legacy support
+         */
+        if (isset($token['access_token'])) {
+            $token['token'] = $token['access_token'];
+        }
+
+        return $token;
     }
 }

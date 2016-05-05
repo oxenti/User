@@ -34,7 +34,7 @@ class UsersController extends AppController
         if (isset($this->Auth)) {
             $this->Auth->allow(['getToken', 'add', 'emailExists', 'verify', 'resetPassword', 'linkedinHandler', 'verifyLinkedin', 'sendVerificationEmail']);
         }
-        
+
         if (isset(getallheaders()['Authorization'])) {
             $this->Auth->deny(['getToken']);
         }
@@ -76,12 +76,18 @@ class UsersController extends AppController
         } elseif (!empty($user['emailcheckcode'])) {
             throw new UnauthorizedException('Before login, please confirm email');
         }
+
+        $userAgent = empty($this->request->data['user_agent']) ? $this->request->env('HTTP_USER_AGENT') : $this->request->data['user_agent'];
+
+        $data = $this->Users->getToken($user['id'], $userAgent);
+
+        if (empty($data)) {
+            throw new UnauthorizedException('Impossible to get token');
+        }
+
         $this->set([
             'success' => true,
-            'data' => [
-                'id' => $user['id'],
-                'token' => $this->_makeToken($user['id'])
-            ],
+            'data' => $data,
             '_serialize' => ['success', 'data']
         ]);
     }
@@ -118,7 +124,7 @@ class UsersController extends AppController
             'contain' => ['Usertypes', 'Personalinformations'],
             'order' => ['Users.email'],
         ];
-        
+
         $contain = isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
         foreach ($contain as $key) {
             $this->paginate['contain'][] = $key;
@@ -139,7 +145,7 @@ class UsersController extends AppController
     public function view($userId = null)
     {
         $this->request->allowMethod(['get']);
-        
+
         $contain = ['Usertypes', 'Personalinformations', 'Personalinformations.Genders'];
 
         $associations = isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
@@ -192,13 +198,13 @@ class UsersController extends AppController
     public function edit($userId = null)
     {
         $this->request->allowMethod(['put', 'post']);
-        
+
         $data = $this->Users->formatRequestData($this->request->data);
         $contain = $this->Users->getRequestAssociations($data);
 
         $queryAssociations = isset($this->request->query['contain']) ? explode(',', $this->request->query['contain']) : [];
         $contain = $this->Users->getValidAssociations(array_merge(['Personalinformations'], $contain, $queryAssociations));
-        
+
         $user = $this->Users->get($userId, ['contain' => $contain]);
 
         if (isset($data['password'])) {
@@ -289,7 +295,7 @@ class UsersController extends AppController
         if (! $emailcheckcode) {
             throw new BadRequestException(__('Invalid code provided'));
         }
-        
+
         $user = $this->Users->find('all', [
             'conditions' => [
                 'emailcheckcode' => $emailcheckcode
@@ -299,10 +305,10 @@ class UsersController extends AppController
         if (! $user) {
             throw new NotFoundException(__('Code not found'));
         }
-    
+
         $user->emailcheckcode = '';
         $user->is_active = 1;
-        
+
         if (! $this->Users->save($user)) {
             throw new BadRequestException("Sorry. The user could not be verifyed");
         }
@@ -328,7 +334,7 @@ class UsersController extends AppController
 
         $code = $passwordchangecode ? $passwordchangecode :
             (isset($this->request->data['passwordchangecode']) ? $this->request->data['passwordchangecode'] : null);
-        
+
         if ($code) {
             return $this->_resetPassword($code);
         }
@@ -384,7 +390,7 @@ class UsersController extends AppController
         if (empty($user)) {
             throw new BadRequestException(__('No user was found with that email.'));
         }
-        
+
         $email = new Email(Configure::read('auth_plugin.email_settings.transport')); // read Config file
         $code = $user->passwordchangecode;
 
@@ -398,7 +404,7 @@ class UsersController extends AppController
             ->send();
 
         $message = ($admin) ? __('has been sent an email with instruction to reset their password.') : __('You should receive an email with further instructions shortly');
-        
+
         $this->set([
             'message' => $message,
             '_serialize' => ['message']
@@ -422,15 +428,15 @@ class UsersController extends AppController
         if (empty($user->emailcheckcode)) {
             throw new UnauthorizedException('Email already confirmed');
         }
-        
+
         $user->emailcheckcode = md5(time() * rand());
         if (! $this->Users->sendVerificationEmail($user)) {//mudar nome
             throw new BadRequestException('Sorry. The email could not be sent.');
         }
-        
+
         $this->Users->save($user);
         $message = __('The email was resent. Please check your inbox.');
-        
+
         $this->set([
             'message' => $message,
             '_serialize' => ['message']
@@ -477,7 +483,7 @@ class UsersController extends AppController
         $usersocialdata = $this->Users->Usersocialdata->find()
             ->where(['linkedin_id' => $linkedinId])
             ->contain('Users')->first();
-        
+
         $success = true;
         if (!$usersocialdata) {
             $success = false;
@@ -508,7 +514,7 @@ class UsersController extends AppController
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
     }
-    
+
     /**
      * emailExists method
      * verify if the given email is already in use
