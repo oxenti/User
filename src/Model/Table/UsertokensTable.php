@@ -2,11 +2,13 @@
 namespace User\Model\Table;
 
 use App\Model\Entity\Usertoken;
+use Cake\Core\Exception\Exception;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\Validation\Validator;
 use Cake\Utility\Security;
 use Firebase\JWT\JWT;
+use UAParser\Parser;
 use User\Model\Table\AppTable;
 
 /**
@@ -155,5 +157,80 @@ class UsertokensTable extends AppTable
             'token' => $token,
             'expires_in' => $expiresIn
         ];
+    }
+
+    public function decode($encodedToken, $tokenType, $algs, $userAgent = null) {
+        if (empty($tokenType) || ($tokenType !== "access_token" && $tokenType !== "refresh_token")) {
+            throw new Exception("Invalid token type", 401);
+        }
+
+        if ($tokenType === "refresh_token" && empty($userAgent)) {
+            throw new Exception("Invalid request", 401);
+        }
+
+        try {
+            $token = JWT::decode($encodedToken, Security::salt(), $algs);
+        } catch (Exception $e) {
+            throw new Exception("Expired Token", 401);
+        }
+
+        $conditions = [
+            $this->aliasField('user_id') => $token->id,
+            $this->aliasField($tokenType) => $encodedToken
+        ];
+
+        $userToken = $this->find('all')
+            ->select([
+                $this->alias() . '.user_agent'
+            ])
+            ->where($conditions)
+            ->first();
+
+        if (empty($userToken)) {
+            throw new Exception("Invalid token", 401);
+        }
+
+        if ($tokenType !== "refresh_token") {
+            return $token;
+        }
+
+        /*
+         * se for refresh token
+         */
+        if (empty($userToken['user_agent'])) {
+            throw new Exception("Invalid token", 401);
+        }
+
+        $userAgentRegistry = $userToken['user_agent'];
+
+        if ($userAgent === $userAgentRegistry) {
+            return $token;
+        }
+
+        $parser = Parser::create();
+        $userAgent = $parser->parse($userAgent);
+        $userAgentRegistry = $parser->parse($userAgentRegistry);
+
+        if ($userAgent->device->family !== $userAgentRegistry->device->family || empty($userAgent->device->family) || empty($userAgentRegistry->device->family)) {
+            throw new Exception("Invalid device family", 401);
+        }
+
+        if ($userAgent->os->family !== $userAgentRegistry->os->family || empty($userAgent->os->family) || empty($userAgentRegistry->os->family)) {
+            throw new Exception("Invalid OS family", 401);
+        }
+
+        if ($userAgent->os->toVersion() < $userAgentRegistry->os->toVersion() || empty($userAgent->os->toVersion()) || empty($userAgentRegistry->os->toVersion())) {
+            throw new Exception("Invalid OS version", 401);
+        }
+
+        if ($userAgent->ua->family !== $userAgentRegistry->ua->family || empty($userAgent->ua->family) || empty($userAgentRegistry->ua->family)) {
+            throw new Exception("Invalid UA family", 401);
+        }
+
+        if ($userAgent->ua->toVersion() < $userAgentRegistry->ua->toVersion() || empty($userAgent->ua->toVersion()) || empty($userAgentRegistry->ua->toVersion())) {
+            throw new Exception("Invalid UA version", 401);
+        }
+
+        return $token;
     }
 }
