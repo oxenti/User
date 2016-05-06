@@ -1,5 +1,5 @@
 <?php
-namespace App\Controller\Component;
+namespace User\Controller\Component;
 
 use App\Network\Exception\BadRequestException;
 use Cake\Core\Configure;
