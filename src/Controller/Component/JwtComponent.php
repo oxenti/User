@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller\Component;
 
+use App\Network\Exception\BadRequestException;
+use Cake\Core\Configure;
 use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;
 use Cake\Network\Request;
@@ -8,7 +10,7 @@ use Cake\Network\Response;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Security;
 use Exception;
-use JWT;
+use Firebase\JWT\JWT;
 
 /**
  * Jwt component
@@ -24,6 +26,7 @@ class JwtComponent extends Component
     protected $_defaultConfig = [
         'parameter' => '_token',
         'userModel' => 'User.Users',
+        'userTokenModel' => 'User.Usertokens',
         'fields' => ['id' => 'id'],
         'unauthenticatedException' => '\Cake\Network\Exception\UnauthorizedException',
         'allowedAlgs' => ['HS256']
@@ -86,7 +89,6 @@ class JwtComponent extends Component
     protected function _getToken($request)
     {
         $token = $request->env('HTTP_AUTHORIZATION');
-
         // @codeCoverageIgnoreStart
         if (!$token && function_exists('getallheaders')) {
             $headers = array_change_key_case(getallheaders());
@@ -97,7 +99,6 @@ class JwtComponent extends Component
             }
         }
         // @codeCoverageIgnoreEnd
-
         if ($token) {
             return substr($token, 7);
         }
@@ -120,13 +121,16 @@ class JwtComponent extends Component
      */
     protected function _findUser($token, $password = null)
     {
+        $userTokenTable = TableRegistry::get($this->_config['userTokenModel']);
+
         try {
-            $token = JWT::decode($token, Security::salt(), $this->_config['allowedAlgs']);
+            $token = $userTokenTable->decode($token, 'access_token', $this->_config['allowedAlgs']);
         } catch (Exception $e) {
             if (Configure::read('debug')) {
                 throw $e;
             }
-            return false;
+
+            throw new BadRequestException("Expired Token", 401);
         }
 
         // Token has full user record.
