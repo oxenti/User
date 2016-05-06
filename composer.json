@@ -8,7 +8,8 @@
         "admad/cakephp-jwt-auth": "^2.0",
         "oxenti/soft-delete": "dev-master",
         "oxenti/address": "dev-master",
-        "cakemanager/cakephp-utils": "dev-master" 
+        "cakemanager/cakephp-utils": "dev-master",
+        "ua-parser/uap-php": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*"
