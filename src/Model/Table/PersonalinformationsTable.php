@@ -1,6 +1,7 @@
 <?php
 namespace User\Model\Table;
 
+use Cake\Localized\Validation\BrValidation;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -84,6 +85,14 @@ class PersonalinformationsTable extends AppTable
 
         $validator
             ->allowEmpty('phone2');
+
+        $validator->provider('br', BrValidation::class);
+        
+        $validator->add('uid', 'idVerification', [
+                'rule' => 'personId',
+                'provider' => 'br'
+            ])
+            ->allowEmpty('uid');
 
 
         return $validator;
