@@ -147,7 +147,7 @@ class UsertokensTable extends AppTable
             throw new Exception("Invalid user", 401);
         }
 
-        $expiresIn = time() + ($isRefresh ? 4838400 : 604800); /* refresh 8 weeks, access 1 week */
+        $expiresIn = time() + ($isRefresh ? 4838400 : 86400); /* refresh 8 weeks, access 1 day */
 
         $token = JWT::encode(
             [
