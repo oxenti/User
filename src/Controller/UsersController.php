@@ -394,7 +394,7 @@ class UsersController extends AppController
             ->template('lost_password', 'default')
             ->viewVars(['serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => $resetUrl])
             ->to($user->email)
-            ->subject(Configure::read('auth_plugin.email_settings.reset_pass_subject'))
+            ->subject(Configure::read('auth_plugin.email_settings.subject.reset_pass_subject'))
             ->send();
 
         $message = ($admin) ? __('has been sent an email with instruction to reset their password.') : __('You should receive an email with further instructions shortly');
