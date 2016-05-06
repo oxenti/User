@@ -2,7 +2,6 @@
 namespace User\Controller\Component;
 
 use App\Network\Exception\BadRequestException;
-use Cake\Core\Configure;
 use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;
 use Cake\Network\Request;
@@ -126,10 +125,6 @@ class JwtComponent extends Component
         try {
             $token = $userTokenTable->decode($token, 'access_token', $this->_config['allowedAlgs']);
         } catch (Exception $e) {
-            if (Configure::read('debug')) {
-                throw $e;
-            }
-
             throw new BadRequestException("Expired Token", 401);
         }
 
