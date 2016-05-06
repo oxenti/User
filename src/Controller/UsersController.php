@@ -9,6 +9,7 @@ use Cake\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\UnauthorizedException;
+use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\Utility\Security;
 use Cake\Utility\Text;
@@ -70,11 +71,28 @@ class UsersController extends AppController
      */
     public function getToken()
     {
-        $user = $this->Auth->identify();
-        if (! $user) {
-            throw new UnauthorizedException('Invalid username or password');
-        } elseif (!empty($user['emailcheckcode'])) {
-            throw new UnauthorizedException('Before login, please confirm email');
+        $user = [ 'id' => null ];
+        $grantType = empty($this->request->data['grant_type']) ? 'authorization_code' : $this->request->data['grant_type'];
+
+        switch ($grantType) {
+            case 'authorization_code':
+                $user = $this->Auth->identify();
+
+                if (! $user) {
+                    throw new UnauthorizedException('Invalid username or password');
+                } elseif (!empty($user['emailcheckcode'])) {
+                    throw new UnauthorizedException('Before login, please confirm email');
+                }
+
+                break;
+
+            case 'refresh_token':
+                $user = $this->_identifyByRefreshToken();
+
+                break;
+
+            default:
+                throw new BadRequestException('Invalid grant type');
         }
 
         $data = $this->_getToken($user['id']);
@@ -86,8 +104,29 @@ class UsersController extends AppController
         ]);
     }
 
+    protected function _identifyByRefreshToken() {
+        if (empty($this->request->data['refresh_token'])) {
+            throw new UnauthorizedException("Invalid token");
+        }
+        $refreshToken = $this->request->data['refresh_token'];
+
+        $userAgent = $this->_getUserAgent();
+
+        $userTokenTable = TableRegistry::get('User.Usertokens');
+
+        $token = $userTokenTable->decode($refreshToken, 'refresh_token', [ 'HS256' ], $userAgent);
+
+        return [
+            'id' => $token->id
+        ];
+    }
+
+    protected function _getUserAgent() {
+        return empty($this->request->data['user_agent']) ? $this->request->env('HTTP_USER_AGENT') : $this->request->data['user_agent'];
+    }
+
     protected function _getToken($userId) {
-        $userAgent = empty($this->request->data['user_agent']) ? $this->request->env('HTTP_USER_AGENT') : $this->request->data['user_agent'];
+        $userAgent = $this->_getUserAgent();
 
         try {
             $data = $this->Users->getToken($userId, $userAgent);
