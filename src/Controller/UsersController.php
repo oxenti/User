@@ -77,13 +77,7 @@ class UsersController extends AppController
             throw new UnauthorizedException('Before login, please confirm email');
         }
 
-        $userAgent = empty($this->request->data['user_agent']) ? $this->request->env('HTTP_USER_AGENT') : $this->request->data['user_agent'];
-
-        $data = $this->Users->getToken($user['id'], $userAgent);
-
-        if (empty($data)) {
-            throw new UnauthorizedException('Impossible to get token');
-        }
+        $data = $this->_getToken($user['id']);
 
         $this->set([
             'success' => true,
@@ -92,22 +86,16 @@ class UsersController extends AppController
         ]);
     }
 
-    /**
-     * _makeToken method
-     * Generates the user's token based on the id
-     * @param int $userId User's id
-     * @return string
-     */
-    protected function _makeToken($userId)
-    {
-        $token = JWT::encode(
-            [
-                'id' => $userId,
-                'exp' => time() + 604800
-            ],
-            Security::salt()
-        );
-        return $token;
+    protected function _getToken($userId) {
+        $userAgent = empty($this->request->data['user_agent']) ? $this->request->env('HTTP_USER_AGENT') : $this->request->data['user_agent'];
+
+        try {
+            $data = $this->Users->getToken($userId, $userAgent);
+        } catch (Exception $e) {
+            throw new UnauthorizedException('Impossible to get token');
+        }
+
+        return $data;
     }
 
     /**
@@ -134,7 +122,6 @@ class UsersController extends AppController
         $this->set(compact('users'));
         $this->set('_serialize', ['users']);
     }
-
 
     /**
      * view method
@@ -457,23 +444,27 @@ class UsersController extends AppController
         $usersocialdata = $this->Users->Usersocialdata->find()
             ->where(['linkedin_id' => $this->request->data['usersocialdata']['linkedin_id']])
             ->contain('Users')->first();
+
+        $userId = null;
+
         if ($usersocialdata) {//login action
-            $token = $this->_makeToken($usersocialdata['user']['id']);
+            $userId = $usersocialdata['user']['id'];
             $success = true;
         } else {
             $user = $this->Users->newEntity($this->request->data);
             if ($this->Users->save($user)) {
-                $token = $this->_makeToken($user->id);
+                $userId = $user->id;
                 $success = true;
             } else {
                 throw new NotFoundException('The user could not be saved. Please, try again.');
             }
         }
+
+        $data = $this->_getToken($userId);
+
         $this->set([
         'success' => $success,
-            'data' => [
-                'token' => $token
-            ],
+            'data' => $data,
             '_serialize' => ['success', 'data']
         ]);
     }

@@ -143,6 +143,10 @@ class UsertokensTable extends AppTable
      */
     protected function _makeToken($userId, $isRefresh = false)
     {
+        if (empty($userId)) {
+            throw new Exception("Invalid user", 401);
+        }
+
         $expiresIn = time() + ($isRefresh ? 4838400 : 604800); /* refresh 8 weeks, access 1 week */
 
         $token = JWT::encode(

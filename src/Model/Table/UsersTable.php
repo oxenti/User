@@ -3,6 +3,7 @@ namespace User\Model\Table;
 
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Core\Configure;
+use Cake\Core\Exception\Exception;
 use Cake\Event\Event;
 use Cake\I18n\Time;
 use Cake\Network\Email\Email;
@@ -406,7 +407,7 @@ class UsersTable extends AppTable
     {
         $token = $this->Usertokens->generate($userId, $userAgent);
         if (empty($token) || !is_array($token)) {
-            return $token;
+            throw new Exception("Impossible to get token", 401);
         }
 
         if (isset($token['user_id'])) {
