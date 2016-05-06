@@ -185,6 +185,8 @@ class UsertokensTable extends AppTable
 
         $userToken = $this->find('all')
             ->select([
+                $this->alias() . '.id',
+                $this->alias() . '.access_token',
                 $this->alias() . '.user_agent'
             ])
             ->where($conditions)
@@ -200,12 +202,32 @@ class UsertokensTable extends AppTable
 
         /*
          * se for refresh token
+         * 1 - deletar o token para evitar novo uso
+         * 2 - se nao tiver user_agent requisicao invalida
+         * 3 - verificar se access token é valido
+         * 4 - validar userAgent
          */
+
+        $this->delete($userToken);
+
         if (empty($userToken['user_agent'])) {
             throw new Exception("Invalid token", 401);
         }
 
         $userAgentRegistry = $userToken['user_agent'];
+
+        $accessToken = $userToken['access_token'];
+
+        try {
+            $accessToken = $this->decode($accessToken, 'access_token', [ 'HS256' ]);
+        } catch (Exception $e) {
+            $accessToken = null;
+        }
+
+        /* se acess token for valido, refresh token nao pode ser usado */
+        if (!empty($accessToken)) {
+            throw new Exception("Invalid request", 401);
+        }
 
         if ($userAgent === $userAgentRegistry) {
             return $token;
