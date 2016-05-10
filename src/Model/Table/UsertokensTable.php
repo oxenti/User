@@ -8,6 +8,7 @@ use Cake\ORM\RulesChecker;
 use Cake\Validation\Validator;
 use Cake\Utility\Security;
 use Firebase\JWT\JWT;
+use Firebase\JWT\ExpiredException;
 use UAParser\Parser;
 use User\Model\Table\AppTable;
 
@@ -172,11 +173,7 @@ class UsertokensTable extends AppTable
             throw new Exception("Invalid request", 401);
         }
 
-        try {
-            $token = JWT::decode($encodedToken, Security::salt(), $algs);
-        } catch (Exception $e) {
-            throw new Exception("Expired Token", 401);
-        }
+        $token = JWT::decode($encodedToken, Security::salt(), $algs);
 
         $conditions = [
             $this->aliasField('user_id') => $token->id,
@@ -219,8 +216,8 @@ class UsertokensTable extends AppTable
         $accessToken = $userToken['access_token'];
 
         try {
-            $accessToken = $this->decode($accessToken, 'access_token', [ 'HS256' ]);
-        } catch (Exception $e) {
+            $accessToken = $this->decode($accessToken, 'access_token', $algs);
+        } catch (ExpiredException $e) {
             $accessToken = null;
         }
 

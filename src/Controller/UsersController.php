@@ -13,7 +13,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Cake\Utility\Security;
 use Cake\Utility\Text;
-use Firebase\JWT\JWT;
+use Firebase\JWT\ExpiredException;
 use User\Controller\AppController;
 
 /**
@@ -108,13 +108,20 @@ class UsersController extends AppController
         if (empty($this->request->data['refresh_token'])) {
             throw new UnauthorizedException("Invalid token");
         }
+
         $refreshToken = $this->request->data['refresh_token'];
 
         $userAgent = $this->_getUserAgent();
 
         $userTokenTable = TableRegistry::get('User.Usertokens');
 
-        $token = $userTokenTable->decode($refreshToken, 'refresh_token', [ 'HS256' ], $userAgent);
+        try {
+            $token = $userTokenTable->decode($refreshToken, 'refresh_token', [ 'HS256' ], $userAgent);
+        } catch (ExpiredException $e) {
+            throw new UnauthorizedException('Impossible to get token');
+        } catch (Exception $e) {
+            throw new UnauthorizedException('Impossible to get token');
+        }
 
         return [
             'id' => $token->id
