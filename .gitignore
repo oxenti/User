@@ -21,6 +21,7 @@ webroot/index.php
 
 /logs/*
 
+composer.lock
 
 # =========================
 # Operating System Files

@@ -41,14 +41,15 @@ class UsersTable extends AppTable
         $this->addBehavior('Timestamp');
 
         $now = strtotime("now");
-        $this->addBehavior('User.Uploadable', [
+        $this->addBehavior('Utils.Uploadable', [
             'avatar_path' => [
                 'field' => 'avatar_path',
-                'path' => '{ROOT}{DS}{WEBROOT}{DS}uploads{DS}{model}{DS}avatar{DS}{primaryKey}{DS}',
+                'path' => '{ROOT}{WEBROOT}{DS}uploads{DS}{model}{DS}avatar{DS}{primaryKey}{DS}',
                 'fileName' => '{primaryKey}_avatar_' . $now . '.{extension}',
                 'entityReplacements' => [
                     '{primaryKey}' => 'id',
-                ]
+                ],
+                'accept_type' => 'image'
             ],
         ]);
 

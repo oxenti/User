@@ -2,13 +2,19 @@
     "name": "oxenti/user",
     "description": "User plugin for CakePHP",
     "type": "cakephp-plugin",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:oxenti/cakephp-utils.git"
+        }
+    ],
     "require": {
         "php": ">=5.4.16",
         "cakephp/cakephp": "~3.0",
         "admad/cakephp-jwt-auth": "^2.0",
         "oxenti/soft-delete": "dev-master",
         "oxenti/address": "dev-master",
-        "cakemanager/cakephp-utils": "dev-master",
+        "cakemanager/cakephp-utils": "dev-master#83c91773de546cd669229bcf3ba9445264314292",
         "ua-parser/uap-php": "^3.0"
     },
     "require-dev": {
