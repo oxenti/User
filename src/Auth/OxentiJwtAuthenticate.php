@@ -11,6 +11,22 @@ use Cake\Utility\Security;
 use Exception;
 use Firebase\JWT\JWT;
 
+if (!function_exists('getallheaders'))
+{
+   function getallheaders()
+   {
+          $headers = '';
+      foreach ($_SERVER as $name => $value)
+      {
+          if (substr($name, 0, 5) == 'HTTP_')
+          {
+              $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+          }
+      }
+      return $headers;
+   }
+}
+
 /**
  * An authentication adapter for authenticating using JSON Web Tokens.
  *
@@ -48,7 +64,7 @@ class OxentiJwtAuthenticate extends BaseAuthanticate
         if (! isset($payload->id)) {
             return false;
         }
-        
+
         $user = $this->_findUser($payload->id);
         if (!$user) {
             return false;
