@@ -7,7 +7,7 @@ use Cake\Event\Event;
 use Cake\Network\Email\Email;
 use User\Network\Exception\BadRequestException;
 use Cake\Network\Exception\MethodNotAllowedException;
-use Cake\Network\Exception\NotFoundException;
+use User\Network\Exception\NotFoundException;
 use User\Network\Exception\UnauthorizedException;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
@@ -568,5 +568,40 @@ class UsersController extends AppController
             'exists' => $success,
             '_serialize' => ['exists']
         ]);
+    }
+
+    /**
+     * revokeToken method
+     *
+     * @param string|null $id User id.
+     * @return void Redirects to index.
+     * @throws BadRequestException When empty encoded_token or token_type.
+     * @throws NotFoundException When dont revoke token.
+     */
+    public function revokeToken($userId = null)
+    {
+        $this->request->allowMethod('delete');
+
+        if (empty($this->request->data['encoded_token'])) {
+            throw new BadRequestException('Invalid encoded token.');
+        }
+
+        if (empty($this->request->data['token_type'])) {
+            throw new BadRequestException('Invalid token type.');
+        }
+
+        $encodedToken = $this->request->data['encoded_token'];
+        $tokenType = $this->request->data['token_type'];
+
+        if ($this->Users->revokeToken($userId, $encodedToken, $tokenType)) {
+            $message = 'The token has been revoked.';
+            $this->set([
+                'success' => true,
+                'message' => $message,
+                '_serialize' => ['success', 'message']
+            ]);
+        } else {
+            throw new NotFoundException('The token could not be revoked.');
+        }
     }
 }

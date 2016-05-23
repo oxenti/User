@@ -164,7 +164,33 @@ class UsertokensTable extends AppTable
         ];
     }
 
-    public function decode($encodedToken, $tokenType, $algs, $userAgent = null) {
+    public function revoke($userId, $encodedToken, $tokenType)
+    {
+        if (empty($tokenType) || ($tokenType !== "access_token" && $tokenType !== "refresh_token")) {
+            return false;
+        }
+
+        $conditions = [
+            $this->aliasField('user_id') => $userId,
+            $this->aliasField($tokenType) => $encodedToken
+        ];
+
+        $userToken = $this->find('all')
+            ->select([
+                $this->alias() . '.id'
+            ])
+            ->where($conditions)
+            ->first();
+
+        if (empty($userToken)) {
+            return false;
+        }
+
+        return $this->delete($userToken);
+    }
+
+    public function decode($encodedToken, $tokenType, $algs, $userAgent = null)
+    {
         if (empty($tokenType) || ($tokenType !== "access_token" && $tokenType !== "refresh_token")) {
             throw new Exception("Invalid token type", 401);
         }

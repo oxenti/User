@@ -433,4 +433,9 @@ class UsersTable extends AppTable
 
         return $token;
     }
+
+    public function revokeToken($userId, $encodedToken, $tokenType)
+    {
+        return $this->Usertokens->revoke($userId, $encodedToken, $tokenType);
+    }
 }
