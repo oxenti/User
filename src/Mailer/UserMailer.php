@@ -9,7 +9,6 @@ use Cake\ORM\TableRegistry;
 
 class UserMailer extends Mailer
 {
-    
     /**
      * List of events to listen to
      */
@@ -36,6 +35,7 @@ class UserMailer extends Mailer
     {
         $code = $user->emailcheckcode;
         $verificationUrl = Configure::read('debug') ? Configure::read('auth_plugin.verify_url.dev') : Configure::read('auth_plugin.verify_url.production');
+
         $this
             ->from(Configure::read('auth_plugin.email_settings.from'))
             ->transport(Configure::read('auth_plugin.email_settings.transport'))
@@ -48,7 +48,8 @@ class UserMailer extends Mailer
                 'name' => $user->personalinformation->first_name,
                 'serviceName' => Configure::read('auth_plugin.service_name'),
                 'code' => $code,
-                'url' => $verificationUrl
+                'url' => $verificationUrl,
+                'wcBaseUrl' => Configure::read('wc_base_url')
             ]);
     }
 }
