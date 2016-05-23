@@ -44,7 +44,7 @@ class UsersTable extends AppTable
         $this->addBehavior('Utils.Uploadable', [
             'avatar_path' => [
                 'field' => 'avatar_path',
-                'path' => '{ROOT}{WEBROOT}{DS}uploads{DS}{model}{DS}avatar{DS}{primaryKey}{DS}',
+                'path' => '{ROOT}{DS}{WEBROOT}{DS}uploads{DS}{model}{DS}avatar{DS}{primaryKey}{DS}',
                 'fileName' => '{primaryKey}_avatar_' . $now . '.{extension}',
                 'entityReplacements' => [
                     '{primaryKey}' => 'id',
