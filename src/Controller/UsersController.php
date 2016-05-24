@@ -580,7 +580,10 @@ class UsersController extends AppController
      */
     public function revokeToken($userId = null)
     {
-        $this->request->allowMethod('delete');
+        /*
+         * angularjs doesn't support send data through delete method
+         */
+        $this->request->allowMethod(['delete', 'post']);
 
         if (empty($this->request->data['encoded_token'])) {
             throw new BadRequestException('Invalid encoded token.');
