@@ -25,6 +25,19 @@ class UsersController extends AppController
 {
 
     /**
+     * Initialize function
+     */
+    public function initialize()
+    {
+        parent::initialize();
+
+        // Register event listeners
+        foreach (Configure::read('user_plugin.listners.users.controller') as $listner) {
+            $this->eventManager()->on($listner);
+        }
+    }
+
+    /**
      * beforeFilter method
      * @param Event $event CakePHP event
      * @return void
@@ -345,6 +358,9 @@ class UsersController extends AppController
         if (! $this->Users->save($user)) {
             throw new BadRequestException("Sorry. The user could not be verifyed");
         }
+
+        $event = new Event('Controller.Users.afterVerify', $this, ['entity' => $user]);
+        $this->eventManager()->dispatch($event);
 
         $this->set([
             'success' => true,
