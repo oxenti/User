@@ -354,6 +354,7 @@ class UsersController extends AppController
 
         $user->emailcheckcode = '';
         $user->is_active = 1;
+        $user->complete_setup = 1;
 
         if (! $this->Users->save($user)) {
             throw new BadRequestException("Sorry. The user could not be verifyed");
