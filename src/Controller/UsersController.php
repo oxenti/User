@@ -14,6 +14,7 @@ use Cake\Routing\Router;
 use Cake\Utility\Security;
 use Cake\Utility\Text;
 use Firebase\JWT\ExpiredException;
+use Firebase\JWT\SignatureInvalidException;
 use User\Controller\AppController;
 
 /**
@@ -131,9 +132,11 @@ class UsersController extends AppController
         try {
             $token = $userTokenTable->decode($refreshToken, 'refresh_token', [ 'HS256' ], $userAgent);
         } catch (ExpiredException $e) {
-            throw new UnauthorizedException('Impossible to get token');
+            throw new UnauthorizedException('1 Impossible to get token');
+        } catch (SignatureInvalidException $e) {
+            throw new UnauthorizedException('2 Impossible to get token');
         } catch (Exception $e) {
-            throw new UnauthorizedException('Impossible to get token');
+            throw new UnauthorizedException('3 Impossible to get token');
         }
 
         return [
