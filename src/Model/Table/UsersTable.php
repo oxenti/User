@@ -149,7 +149,7 @@ class UsersTable extends AppTable
 
     public function afterSave($event, $entity, $options)
     {
-        if ($entity->isNew()) {
+        if ($entity->isNew() && empty($entity->social_id)) {
             $event = new Event('Model.User.requireVerification', $this, ['entity' => $entity, 'action' => 'register']);
             $this->eventManager()->dispatch($event);
         }
