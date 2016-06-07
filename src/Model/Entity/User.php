@@ -1,6 +1,7 @@
 <?php
 namespace User\Model\Entity;
 
+use Cake\Core\Configure;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
 use Cake\Routing\Router;
@@ -59,10 +60,10 @@ class User extends Entity
         $path = '';
         if (isset($this->_properties['avatar_path'])) {
             if ($this->_properties['avatar_path']) {
-                $path = (filter_var($this->_properties['avatar_path'], FILTER_VALIDATE_URL)) ? $this->_properties['avatar_path'] : Router::url('/', true) . $this->_properties['avatar_path'];
+                $baseUrl = empty(Configure::read('static_base_url')) ? Router::url('/', true) : Configure::read('static_base_url');
+                $path = (filter_var($this->_properties['avatar_path'], FILTER_VALIDATE_URL)) ? $this->_properties['avatar_path'] : $baseUrl . $this->_properties['avatar_path'];
             }
         }
         return $path;
     }
- 
 }
