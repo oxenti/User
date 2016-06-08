@@ -214,7 +214,13 @@ class UsersTable extends AppTable
         $email->from(Configure::read('auth_plugin.email_settings.from'))
             ->emailFormat('html')
             ->template('register', 'default')
-            ->viewVars(['name' => $user->personalinformation->first_name, 'serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => $verificationUrl])
+            ->viewVars([
+                'name' => $user->personalinformation->first_name,
+                'serviceName' => Configure::read('auth_plugin.service_name'),
+                'code' => $code,
+                'url' => $verificationUrl,
+                'wcBaseUrl' => Configure::read('wc_base_url')
+            ])
             ->to($user->email)
             ->subject(Configure::read('auth_plugin.email_settings.register_subject'));
 

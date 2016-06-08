@@ -451,7 +451,12 @@ class UsersController extends AppController
         $email->from(Configure::read('auth_plugin.email_settings.from'))
             ->emailFormat('html')
             ->template('lost_password', 'default')
-            ->viewVars(['serviceName' => Configure::read('auth_plugin.service_name'), 'code' => $code, 'url' => $resetUrl])
+            ->viewVars([
+                'serviceName' => Configure::read('auth_plugin.service_name'),
+                'code' => $code,
+                'url' => $resetUrl,
+                'wcBaseUrl' => Configure::read('wc_base_url')
+            ])
             ->to($user->email)
             ->subject(Configure::read('auth_plugin.email_settings.subject.reset_pass_subject'))
             ->send();
