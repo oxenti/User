@@ -16,6 +16,7 @@ webroot/index.php
 /plugins/oxenti/*
 
 /config/app.php
+/config/linkedin.php
 
 /tmp/*
 
