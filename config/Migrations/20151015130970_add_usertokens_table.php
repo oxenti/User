@@ -1,49 +1,37 @@
 <?php
 use Migrations\AbstractMigration;
 
-class AddPersonalinformationTable extends AbstractMigration
+class AddUsertokensTable extends AbstractMigration
 {
     /**
      * Migrate Up.
      */
     public function up()
     {
-        $table = $this->table('personalinformations');
+        $table = $this->table('usertokens');
         $table
-            ->addColumn('gender_id', 'integer', [
+            ->addColumn('user_id', 'integer', [
                 'limit' => 11
             ])
-            ->addColumn('first_name', 'string', [
+            ->addColumn('access_token', 'string', [
                'default' => null,
-               'limit' => 100,
+               'limit' => 256,
                'null' => false,
             ])
-            ->addColumn('last_name', 'string', [
+            ->addColumn('refresh_token', 'string', [
                'default' => null,
-               'limit' => 100,
+               'limit' => 256,
                'null' => false,
             ])
-            ->addColumn('birth', 'date', [
+            ->addColumn('user_agent', 'string', [
                'default' => null,
+               'limit' => 300,
                'null' => false,
             ])
-            ->addColumn('uid', 'string', [
+            ->addColumn('refresh_expires_in', 'datetime', [
                'default' => null,
-               'limit' => 20,
-               'null' => true,
-            ])
-            ->addColumn('phone1', 'string', [
-               'default' => null,
-               'limit' => 13,
-               'null' => true,
-            ])
-            ->addColumn('phone2', 'string', [
-               'default' => null,
-               'limit' => 13,
-               'null' => true,
-            ])
-            ->addColumn('is_active', 'boolean', [
-                'default' => 1,
+               'limit' => null,
+               'null' => false,
             ])
             ->addColumn('created', 'datetime', [
                'default' => 'CURRENT_TIMESTAMP',
@@ -57,14 +45,14 @@ class AddPersonalinformationTable extends AbstractMigration
             ])
             ->addIndex(
                 [
-                    'gender_id',
+                    'user_id',
                 ]
             )
             ->create();
             $table
             ->addForeignKey(
-                'gender_id',
-                'genders',
+                'user_id',
+                'users',
                 'id',
                 [
                     'update' => 'NO_ACTION',
@@ -79,6 +67,6 @@ class AddPersonalinformationTable extends AbstractMigration
      */
     public function down()
     {
-        $this->dropTable('personalinformations');
+        $this->dropTable('addresses_users');
     }
 }

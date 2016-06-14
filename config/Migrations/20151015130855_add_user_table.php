@@ -13,6 +13,9 @@ class AddUserTable extends AbstractMigration
             ->addColumn('usertype_id', 'integer', [
                 'limit' => 11
             ])
+            ->addColumn('personalinformation_id', 'integer', [
+                'limit' => 11
+            ])
             ->addColumn('avatar_path', 'text', [
                'default' => null,
                'null' => true,
@@ -41,6 +44,9 @@ class AddUserTable extends AbstractMigration
                'default' => null,
                'null' => true,
             ])
+            ->addColumn('complete_setup', 'boolean', [
+                'default' => 1,
+            ])
             ->addColumn('is_active', 'boolean', [
                 'default' => 1,
             ])
@@ -59,11 +65,25 @@ class AddUserTable extends AbstractMigration
                     'usertype_id',
                 ]
             )
+            ->addIndex(
+                [
+                    'personalinformation_id',
+                ]
+            )
             ->create();
             $table
             ->addForeignKey(
                 'usertype_id',
                 'usertypes',
+                'id',
+                [
+                    'update' => 'NO_ACTION',
+                    'delete' => 'NO_ACTION'
+                ]
+            )
+            ->addForeignKey(
+                'personalinformation_id',
+                'personalinformations',
                 'id',
                 [
                     'update' => 'NO_ACTION',
