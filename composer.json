@@ -14,7 +14,7 @@
         "admad/cakephp-jwt-auth": "^2.0",
         "oxenti/soft-delete": "dev-master",
         "oxenti/address": "dev-master",
-        "cakemanager/cakephp-utils": "dev-master#c45476d8687e4787517405241c05be7854d7079b",
+        "cakemanager/cakephp-utils": "dev-master#fe519033bc1bbaaa9fa98b9282b47b7938954b2f",
         "ua-parser/uap-php": "^3.0"
     },
     "require-dev": {

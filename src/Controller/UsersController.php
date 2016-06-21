@@ -33,9 +33,9 @@ class UsersController extends AppController
         parent::initialize();
 
         // Register event listeners
-        foreach (Configure::read('user_plugin.listners.users.controller') as $listner) {
-            $this->eventManager()->on($listner);
-        }
+        // foreach (Configure::read('user_plugin.listners.users.controller') as $listner) {
+        //     $this->eventManager()->on($listner);
+        // }
     }
 
     /**
@@ -248,6 +248,10 @@ class UsersController extends AppController
     {
         $this->request->allowMethod(['put', 'post']);
 
+        if (isset($this->request->data['avatar_path']['type']) && $this->request->data['avatar_path']['type'] == 'base64') {
+            $this->request->data['avatar_path'] = $this->Users->base64_to_jpeg($this->request->data['avatar_path']['content']);
+        }
+
         $data = $this->Users->formatRequestData($this->request->data);
         $contain = $this->Users->getRequestAssociations($data);
 
@@ -259,9 +263,7 @@ class UsersController extends AppController
         if (isset($data['password'])) {
             unset($data['password']);
         }
-
         $user = $this->Users->patchEntity($user, $this->Users->setEntityUserIds($data, $user));
-
         if (! $this->Users->save($user, ['associated' => ['Personalinformations', 'Addresses'] ])) {
             throw new BadRequestException(json_encode($user->errors(), JSON_PRETTY_PRINT));
         }

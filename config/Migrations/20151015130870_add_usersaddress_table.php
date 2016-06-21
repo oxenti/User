@@ -40,26 +40,6 @@ class AddUsersaddressTable extends AbstractMigration
                 ]
             )
             ->create();
-            $table
-            ->addForeignKey(
-                'user_id',
-                'users',
-                'id',
-                [
-                    'update' => 'NO_ACTION',
-                    'delete' => 'NO_ACTION'
-                ]
-            )
-            ->addForeignKey(
-                'address_id',
-                'addresses',
-                'id',
-                [
-                    'update' => 'NO_ACTION',
-                    'delete' => 'NO_ACTION'
-                ]
-            )
-            ->update();
     }
 
     /**

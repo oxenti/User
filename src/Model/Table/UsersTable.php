@@ -44,11 +44,11 @@ class UsersTable extends AppTable
         $this->addBehavior('Utils.Uploadable', [
             'avatar_path' => [
                 'field' => 'avatar_path',
-                'path' => '{ROOT}{DS}{WEBROOT}{DS}uploads{DS}{model}{DS}avatar{DS}{primaryKey}{DS}',
-                'fileName' => '{primaryKey}_avatar_' . $now . '.{extension}',
                 'entityReplacements' => [
                     '{primaryKey}' => 'id',
                 ],
+                'path' => '{ROOT}{DS}{WEBROOT}{DS}uploads{DS}{model}{DS}avatar{DS}{primaryKey}{DS}',
+                'fileName' => '{primaryKey}_avatar_' . $now . '.{extension}',
                 'accept_type' => 'image'
             ],
         ]);
@@ -438,6 +438,27 @@ class UsersTable extends AppTable
         }
 
         return $token;
+    }
+
+    function base64_to_jpeg($base64_string) {
+        $output_file = ini_get('upload_tmp_dir');
+        $output_file = $output_file. '/' . time();
+        $ifp = fopen($output_file, "wb");
+
+        fwrite($ifp, base64_decode($base64_string));
+        fclose($ifp);
+        chmod ($output_file, 777);
+        $size = filesize($output_file);
+
+        $returnData = [
+            'name' => 'teste.png',
+            'tmp_name' => $output_file,
+            'type' => 'image/png',
+            'error' => 0,
+            'size' => $size
+        ];
+
+        return $returnData;
     }
 
     public function revokeToken($userId, $encodedToken, $tokenType)
