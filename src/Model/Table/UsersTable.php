@@ -447,7 +447,7 @@ class UsersTable extends AppTable
 
         fwrite($ifp, base64_decode($base64_string));
         fclose($ifp);
-        chmod ($output_file, 777);
+        chmod($output_file, 777);
         $size = filesize($output_file);
 
         $returnData = [
