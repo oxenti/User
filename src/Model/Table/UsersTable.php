@@ -174,13 +174,13 @@ class UsersTable extends AppTable
         // $url = $data['urlVerify'];
         // unset($data['urlVerify']);
         $user = $this->newEntity($this->formatRequestData($data));
-
-        if ($this->save($user)) {
-            if (! $this->sendVerificationEmail($user)) {
-                $this->delete($user);
-                return false;
-            }
-        }
+        $this->save($user);
+        // if ($this->save($user)) {
+        //     if (! $this->sendVerificationEmail($user)) {
+        //         $this->delete($user);
+        //         return false;
+        //     }
+        // }
 
         return $user;
     }
