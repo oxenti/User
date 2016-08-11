@@ -484,7 +484,7 @@ class UsersController extends AppController
             throw new BadRequestException('Invalid data provided.');
         }
 
-        $user = $this->Users->findByEmail($this->request->data['email'])->first();
+        $user = $this->Users->findByEmail($this->request->data['email'])->contain(['Personalinformations'])->first();
         if (empty($user->emailcheckcode)) {
             throw new UnauthorizedException('Email already confirmed');
         }
