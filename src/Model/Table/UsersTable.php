@@ -237,6 +237,7 @@ class UsersTable extends AppTable
     {
         $user = $this->find()
             ->where(['Users.passwordchangecode' => $passwordChangeCode])
+            ->contain(['Personalinformations'])
             ->first();
         if (empty($user)) {
             return false;

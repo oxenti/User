@@ -395,7 +395,7 @@ class UsersController extends AppController
         }
 
         if (!isset($this->request->data['email'])) {
-            throw new BadRequestExceptionException(__('No e-mail provided.'));
+            throw new BadRequestException(__('No e-mail provided.'));
         }
 
         return $this->_sendPasswordResetCode($this->request->data);
