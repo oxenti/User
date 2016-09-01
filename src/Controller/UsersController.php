@@ -542,14 +542,19 @@ class UsersController extends AppController
         ]);
     }
 
-    public function verifyLinkedin($linkedinId)
+    public function verifyLinkedin($linkedinId, $email)
     {
         $usersocialdata = $this->Users->Usersocialdata->find()
             ->where(['linkedin_id' => $linkedinId])
             ->contain('Users')->first();
 
+        $user = $this->Users->findByEmail($email)->first();
+        if ($user && !$usersocialdata) {
+            $user = $this->Users->patchEntity($user, ['usersocialdata' => ['linkedin_id' => $linkedinId ]]);
+            $this->Users->save($user);
+        }
         $success = true;
-        if (!$usersocialdata) {
+        if (!$usersocialdata && !$user) {
             $success = false;
         }
 
